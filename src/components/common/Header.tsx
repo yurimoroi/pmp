@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import { AuthSession, fetchAuthSession, signOut } from "aws-amplify/auth";
-import { useState, useEffect } from "react";
+import { signOut } from "aws-amplify/auth";
+import { useUser } from "@/context/userContext";
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -12,7 +12,7 @@ interface HeaderProps {
 
 export function Header({ onToggleSidebar }: HeaderProps) {
   const router = useRouter();
-  const [session, setSession] = useState<AuthSession | null>(null);
+  const { user, loading } = useUser();
 
   const handleLogout = async () => {
     try {
@@ -22,18 +22,6 @@ export function Header({ onToggleSidebar }: HeaderProps) {
       console.error("ログアウトに失敗しました:", error);
     }
   };
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const session = await fetchAuthSession();
-        setSession(session);
-      } catch (error) {
-        console.error("認証情報の取得に失敗しました:", error);
-      }
-    };
-    checkAuth();
-  }, []);
 
   return (
     <header className="bg-orange-500 fixed w-full top-0 z-50">
@@ -49,8 +37,8 @@ export function Header({ onToggleSidebar }: HeaderProps) {
 
         <div className="flex items-center space-x-4">
           <div className="text-orange-100">
-            {/* <div className="text-sm">{session?.tokens?.idToken?.payload?.["custom:name"] || "ゲスト"}</div>
-            <div className="text-xs opacity-75">{session?.tokens?.idToken?.payload?.["cognito:groups"] || "権限なし"}</div> */}
+            <div className="text-sm">{loading ? "読み込み中..." : user?.name ?? "ゲスト"}</div>
+            <div className="text-xs opacity-75">{loading ? "読み込み中..." : user?.group ?? "権限なし"}</div>
           </div>
           <button onClick={handleLogout} className="px-4 py-2 text-sm text-orange-100 hover:bg-orange-600 hover:text-white rounded-md transition-colors cursor-pointer">
             ログアウト

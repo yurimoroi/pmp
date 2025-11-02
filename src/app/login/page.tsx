@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "aws-amplify/auth";
+import { fetchAuthSession, signIn } from "aws-amplify/auth";
 import { SIGN_IN_STEP } from "@/lib/signInStep";
 import "@/lib/amplifyConfig";
 
@@ -45,6 +45,16 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const session = await fetchAuthSession();
+      if (session.tokens?.idToken) {
+        router.push("/");
+      }
+    };
+    checkAuth();
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden flex items-center justify-center bg-gray-50">

@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@aws-amplify/adapter-nextjs": "^1.6.10",
+    "@aws-amplify/ui-react": "^6.13.1",
     "@heroicons/react": "^2.2.0",
     "@holiday-jp/holiday_jp": "^2.5.1",
     "@react-pdf/renderer": "^4.3.1",
@@ -16,7 +18,7 @@
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "lucide-react": "^0.552.0",
-    "next": "16.0.1",
+    "next": "15.3.3",
     "oidc-client-ts": "^3.3.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",

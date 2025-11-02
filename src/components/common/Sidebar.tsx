@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { FiUser, FiUserPlus, FiPrinter, FiCalendar, FiClock, FiSettings, FiTool, FiUsers } from "react-icons/fi";
 import { SchedulePopup } from "@/components/schedule/SchedulePopup";
+import { useUser } from "@/context/userContext";
 
 type SidebarProps = {
   isOpen: boolean;
@@ -14,8 +15,7 @@ type SidebarProps = {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [isSchedulePopupOpen, setIsSchedulePopupOpen] = useState(false);
-  // const { data: session } = useSession();
-  // const userRole = session?.user?.role || "編集者";
+  const { user } = useUser();
 
   const menuItems = [
     { href: "/staff-list", label: "職員一覧", icon: FiUser, roles: ["管理者", "編集者", "閲覧者"] },
@@ -29,8 +29,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { href: "/nursery", label: "登降園管理", icon: FiUsers, roles: ["保育園"] },
   ];
 
-  // const filteredMenuItems = menuItems.filter((item) => item.roles.includes(userRole));
-  const filteredMenuItems = menuItems.filter((item) => item.roles.includes("管理者"));
+  const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.group ?? ""));
 
   const handleMenuClick = (href: string, e: React.MouseEvent) => {
     if (href === "#") {

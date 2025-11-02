@@ -1,12 +1,12 @@
 "use client";
 
-import { Amplify } from "aws-amplify";
+import { ResourcesConfig } from "aws-amplify";
 
-Amplify.configure({
+export const amplifyConfig: ResourcesConfig = {
   Auth: {
     Cognito: {
-      userPoolId: "ap-northeast-1_AP1FB3AyT",
-      userPoolClientId: "6v5j434nrlk0brkrl9v0fcd25k",
+      userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID ?? "ap-northeast-1_AP1FB3AyT",
+      userPoolClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID ?? "6v5j434nrlk0brkrl9v0fcd25k",
     },
   },
-});
+};

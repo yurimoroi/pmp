@@ -5,6 +5,7 @@ import { ClientLayout } from "./ClientLayout";
 import { Question } from "../common/Question";
 import { useState } from "react";
 import { SupportManual } from "../common/SupportManual";
+import { UserProvider } from "@/context/userContext";
 
 interface RootLayoutClientProps {
   children: React.ReactNode;
@@ -19,16 +20,14 @@ export function RootLayoutClient({ children }: RootLayoutClientProps) {
   return isLoginPage ? (
     children
   ) : isNurseryPage ? (
-    // <SessionProvider>
-    <>
+    <UserProvider>
       {children}
       <Question onOpen={() => setIsOpen(true)} />
       <SupportManual isOpen={isOpen} onClose={() => setIsOpen(false)} />
-    </>
+    </UserProvider>
   ) : (
-    // </SessionProvider>
-    // <SessionProvider>
-    <ClientLayout>{children}</ClientLayout>
-    // </SessionProvider>
+    <UserProvider>
+      <ClientLayout>{children}</ClientLayout>
+    </UserProvider>
   );
 }

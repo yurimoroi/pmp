@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { RootLayoutClient } from "@/components/layout/RootLayoutClient";
 import "./globals.css";
+import { AmplifyProvider } from "@/lib/authProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
-        <RootLayoutClient>{children}</RootLayoutClient>
+        <RootLayoutClient>
+          <AmplifyProvider>{children}</AmplifyProvider>
+        </RootLayoutClient>
       </body>
     </html>
   );
