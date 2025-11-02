@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchAuthSession, signIn } from "aws-amplify/auth";
+import { fetchAuthSession, signIn, signOut } from "aws-amplify/auth";
 import { SIGN_IN_STEP } from "@/lib/signInStep";
 import "@/lib/amplifyConfig";
+import { loginLocation } from "@/lib/loginLocation";
 
 const LoginPage = () => {
   const [error, setError] = useState("");
@@ -20,10 +21,17 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const result = await signIn({ username: credentials.userId, password: credentials.password });
+      console.log(result);
 
       switch (result.nextStep.signInStep) {
         case SIGN_IN_STEP.DONE:
-          router.push("/sample");
+          const result = await loginLocation(router);
+          if (!result) {
+            setError("権限がありません。Cognitoのグループを確認してください。");
+            setLoading(false);
+            signOut();
+            return;
+          }
           break;
         case SIGN_IN_STEP.CONFIRM_SIGN_UP:
           setError("ユーザー登録が未完了です");

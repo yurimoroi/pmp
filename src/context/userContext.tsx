@@ -9,6 +9,7 @@ type UserInfo = {
   name?: string;
   sub?: string;
   group?: string;
+  nickname?: string;
 };
 
 type UserContextType = {

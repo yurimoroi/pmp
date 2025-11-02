@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { confirmSignIn } from "aws-amplify/auth";
+import { confirmSignIn, fetchAuthSession, signOut } from "aws-amplify/auth";
 import { SIGN_IN_STEP } from "@/lib/signInStep";
 import "@/lib/amplifyConfig";
+import { loginLocation } from "@/lib/loginLocation";
 
 const ResetPasswordPage = () => {
   const [error, setError] = useState("");
@@ -41,13 +42,28 @@ const ResetPasswordPage = () => {
         },
       });
       setLoading(false);
-      router.push("/sample");
+      const result = await loginLocation(router);
+      if (!result) {
+        setError("権限がありません。Cognitoのグループを確認してください。");
+        signOut();
+        return;
+      }
     } catch (error) {
       console.error(error);
       setError("パスワードの変更に失敗しました。現在のパスワードが正しいか確認してください");
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const session = await fetchAuthSession();
+      if (session.tokens?.idToken) {
+        router.push("/");
+      }
+    };
+    checkAuth();
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden flex items-center justify-center bg-gray-50">
