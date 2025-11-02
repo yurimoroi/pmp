@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const cognitoAuthConfig = {
+//   authority: "https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_AP1FB3AyT",
+//   client_id: "6v5j434nrlk0brkrl9v0fcd25k",
+//   redirect_uri: "https://d84l1y8p4kdic.cloudfront.net",
+//   response_type: "code",
+//   scope: "phone openid email",
+// };
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,11 +24,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }
+

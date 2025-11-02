@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { fetchAuthSession } from "aws-amplify/auth";
+import { useEffect, useState } from "react";
+import "@/lib/amplifyConfig";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -13,6 +15,26 @@ export default function Home() {
     console.log(data);
     setMessage(data);
   };
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const session = await fetchAuthSession();
+        console.log(session);
+        const idToken = session.tokens?.idToken?.payload;
+        console.log(idToken);
+        if (idToken?.email) {
+          fetchMessage();
+        } else {
+          alert("未ログイン");
+        }
+      } catch {
+        alert("セッションなし");
+      }
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <main style={{ textAlign: "center", marginTop: "50px" }}>

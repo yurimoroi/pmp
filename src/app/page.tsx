@@ -56,6 +56,15 @@ export default function Home() {
       >
         Sample
       </button>
+
+      <button
+        onClick={() => {
+          router.push("/login");
+        }}
+        className="bg-blue-500 text-white p-2 rounded-md"
+      >
+        Login
+      </button>
     </div>
   );
 }
