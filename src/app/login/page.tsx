@@ -2,15 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchAuthSession, signIn } from "aws-amplify/auth";
+import { signIn } from "aws-amplify/auth";
+import { SIGN_IN_STEP } from "@/lib/signInStep";
 import "@/lib/amplifyConfig";
-
-const SIGN_IN_STEP = {
-  DONE: "DONE",
-  CONFIRM_SIGN_UP: "CONFIRM_SIGN_UP",
-  RESET_PASSWORD: "RESET_PASSWORD",
-  CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED: "CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED",
-};
 
 const LoginPage = () => {
   const [error, setError] = useState("");

@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updatePassword } from "aws-amplify/auth";
+import { confirmSignIn } from "aws-amplify/auth";
+import { SIGN_IN_STEP } from "@/lib/signInStep";
 import "@/lib/amplifyConfig";
 
 const ResetPasswordPage = () => {
@@ -33,12 +34,13 @@ const ResetPasswordPage = () => {
 
     setLoading(true);
     try {
-      await updatePassword({
-        oldPassword: credentials.currentPassword,
-        newPassword: credentials.newPassword,
+      await confirmSignIn({
+        challengeResponse: credentials.newPassword,
+        options: {
+          signInStep: SIGN_IN_STEP.CONFIRM_SIGN_IN_WITH_NEW_PASSWORD_REQUIRED,
+        },
       });
       setLoading(false);
-      alert("パスワードが正常に変更されました");
       router.push("/sample");
     } catch (error) {
       console.error(error);

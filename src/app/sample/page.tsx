@@ -23,6 +23,7 @@ export default function Home() {
         console.log(session);
         const idToken = session.tokens?.idToken?.payload;
         console.log(idToken);
+
         if (idToken?.email) {
           fetchMessage();
         } else {
