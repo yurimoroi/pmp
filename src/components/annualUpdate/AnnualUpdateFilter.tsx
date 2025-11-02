@@ -1,6 +1,6 @@
 import { FullColorButton } from "@/components/common/Button";
 import { AnnualUpdateChildren } from "@/types/annualUpdateChildren";
-import { handleApiError } from "@/utility/api/apiHelper";
+// import { handleApiError } from "@/utility/api/apiHelper";
 
 interface AnnualUpdateFilterProps {
   nurseryName: string;
@@ -35,7 +35,7 @@ const AnnualUpdateFilter = ({
     });
 
     if (!response.ok) {
-      handleApiError(response);
+      // handleApiError(response);
       throw new Error("年次更新に失敗しました");
     }
     const responseData = await response.json();

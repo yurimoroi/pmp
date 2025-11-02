@@ -9,25 +9,17 @@ import { ConditionCheck } from "@/components/child-condition/ConditionCheck";
 import { PlaySelect } from "@/components/child-condition/PlaySelect";
 import { AbsenceReasonSelect } from "@/components/child-condition/AbsenceReasonSelect";
 import { ConfirmScreen } from "@/components/child-condition/ConfirmScreen";
-import { useSession } from "next-auth/react";
-import { handleApiError } from "@/utility/api/apiHelper";
+import { useUser } from "@/context/userContext";
+// import { handleApiError } from "@/utility/api/apiHelper";
 import { ActionButton } from "@/components/common/Button";
 
-type CheckinStep =
-  | "class"
-  | "name"
-  | "pickup"
-  | "condition"
-  | "play"
-  | "reason"
-  | "confirm"
-  | "complete";
+type CheckinStep = "class" | "name" | "pickup" | "condition" | "play" | "reason" | "confirm" | "complete";
 type CheckoutStep = "class" | "name" | "confirm" | "complete";
 type AbsenceStep = "class" | "name" | "reason" | "confirm" | "complete";
 
 function ChildConditionPageContent() {
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery;
+  const { user } = useUser();
+  const nurseryName = user?.nickname;
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -148,7 +140,7 @@ function ChildConditionPageContent() {
       });
 
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
 
         if (response.status === 400) {
           return;
@@ -174,7 +166,7 @@ function ChildConditionPageContent() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const response = await fetch(`/api/nursery/settings?nursery=${nurseryName}`);
+      const response = await fetch(`/api/nursery/settings?nursery=${user?.nickname}`);
       const data = await response.json();
       setIsWaterPlayEnabled(data.data.playingWaterDisplayFlg);
       setIsMedicationEnabled(data.data.takeMedicineDisplayFlg);
@@ -186,9 +178,7 @@ function ChildConditionPageContent() {
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       <main className={`mx-auto p-6 ${step === "name" ? "max-w-7xl" : "max-w-xl"}`}>
-        <h1 className="text-2xl font-bold text-gray-700 mb-8 text-center">
-          {mode === "checkin" ? "登園" : mode === "checkout" ? "降園" : "欠席"}
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-700 mb-8 text-center">{mode === "checkin" ? "登園" : mode === "checkout" ? "降園" : "欠席"}</h1>
 
         {step === "class" && <ClassSelect onSelect={handleClassSelect} mode={mode} />}
 
@@ -196,10 +186,7 @@ function ChildConditionPageContent() {
           <>
             <NameSelect className={selectedClassName} onSelect={handleNameSelect} mode={mode} />
             <div className="mt-8">
-              <ActionButton
-                onClick={handleBack}
-                variant={mode === "absence" ? "tertiary-secondary" : "tertiary-primary"}
-              >
+              <ActionButton onClick={handleBack} variant={mode === "absence" ? "tertiary-secondary" : "tertiary-primary"}>
                 戻る
               </ActionButton>
             </div>
@@ -221,10 +208,7 @@ function ChildConditionPageContent() {
 
             {step === "condition" && (
               <>
-                <ConditionCheck
-                  onComplete={handleConditionComplete}
-                  isMedicationEnabled={isMedicationEnabled}
-                />
+                <ConditionCheck onComplete={handleConditionComplete} isMedicationEnabled={isMedicationEnabled} />
                 <div className="mt-8">
                   <ActionButton onClick={handleBack} variant="tertiary-primary">
                     戻る
@@ -235,10 +219,7 @@ function ChildConditionPageContent() {
 
             {step === "play" && (
               <>
-                <PlaySelect
-                  onComplete={handlePlayComplete}
-                  isWaterPlayEnabled={isWaterPlayEnabled}
-                />
+                <PlaySelect onComplete={handlePlayComplete} isWaterPlayEnabled={isWaterPlayEnabled} />
                 <div className="mt-8">
                   <ActionButton onClick={handleBack} variant="tertiary-primary">
                     戻る
@@ -323,10 +304,7 @@ function ChildConditionPageContent() {
                 {mode === "absence" ? "管理画面へ戻る" : "ホームへ戻る"}
               </button> */}
 
-              <ActionButton
-                onClick={handleBackToHome}
-                variant={mode === "absence" ? "secondary" : "primary"}
-              >
+              <ActionButton onClick={handleBackToHome} variant={mode === "absence" ? "secondary" : "primary"}>
                 {mode === "absence" ? "管理画面へ戻る" : "ホームへ戻る"}
               </ActionButton>
             </div>

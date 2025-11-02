@@ -2,17 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
+import { useUser } from "@/context/userContext";
 import { getNurseryClassName } from "@/utility/nursery";
 import { Children } from "@/types/child-list";
 import EditModal from "@/components/child-list/EditModal";
-import { handleApiError } from "@/utility/api/apiHelper";
+// import { handleApiError } from "@/utility/api/apiHelper";
 import ConditionTable from "@/components/child-list/CondtionTable";
 import Filter from "@/components/child-list/Filter";
 
 export default function ChildListPage() {
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery || "";
+  const { user } = useUser();
+  const nurseryName = user?.nickname || "";
 
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
@@ -23,9 +23,7 @@ export default function ChildListPage() {
   const [isMedicationEnabled, setIsMedicationEnabled] = useState<boolean>(false);
 
   const handleSave = (updatedChildren: Children) => {
-    const updatedChildrenList = children.map((child) =>
-      child.childId === updatedChildren.childId ? updatedChildren : child
-    );
+    const updatedChildrenList = children.map((child) => (child.childId === updatedChildren.childId ? updatedChildren : child));
     setChildren(updatedChildrenList);
     setEditingChildren(null);
   };
@@ -44,7 +42,7 @@ export default function ChildListPage() {
       });
 
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("登録に失敗しました");
       }
 
@@ -101,13 +99,7 @@ export default function ChildListPage() {
 
         {/* 編集モーダル */}
         {editingChildren && (
-          <EditModal
-            isWaterPlayEnabled={isWaterPlayEnabled}
-            isMedicationEnabled={isMedicationEnabled}
-            date={new Date(selectedDate)}
-            onSave={handleSave}
-            onClose={() => setEditingChildren(null)}
-          >
+          <EditModal isWaterPlayEnabled={isWaterPlayEnabled} isMedicationEnabled={isMedicationEnabled} date={new Date(selectedDate)} onSave={handleSave} onClose={() => setEditingChildren(null)}>
             {editingChildren}
           </EditModal>
         )}

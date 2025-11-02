@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { hash } from "bcryptjs";
-import { handleApiError } from "@/utility/api/apiHelper";
+import { useUser } from "@/context/userContext";
+// import { handleApiError } from "@/utility/api/apiHelper";
 
 type Account = {
   id: string;
@@ -23,7 +23,7 @@ const roles = ["管理者", "編集者", "閲覧者", "保育園"] as const;
 const kindergartens = ["まつばら園", "しもばやし園", "なかじま園"] as const;
 
 export default function AccountsPage() {
-  const { data: session } = useSession();
+  const { user } = useUser();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
@@ -37,7 +37,7 @@ export default function AccountsPage() {
     try {
       const response = await fetch(`/api/accounts`);
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("データの取得に失敗しました");
       }
 
@@ -98,13 +98,11 @@ export default function AccountsPage() {
         body: JSON.stringify(selectedAccounts),
       });
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("データの削除に失敗しました");
       }
 
-      setAccounts((prevAccounts) =>
-        prevAccounts.filter((account) => !selectedAccounts.includes(account.id))
-      );
+      setAccounts((prevAccounts) => prevAccounts.filter((account) => !selectedAccounts.includes(account.id)));
       setSelectedAccounts([]);
       setIsDeleting(false);
     } catch (error) {
@@ -149,13 +147,13 @@ export default function AccountsPage() {
           body: JSON.stringify({
             ...editingAccount,
             password: editingAccount?.password ? await hash(editingAccount.password, 10) : "",
-            createdBy: session?.user?.name || "",
-            updatedBy: session?.user?.name || "",
+            createdBy: user?.name || "",
+            updatedBy: user?.name || "",
           }),
         });
 
         if (!response.ok) {
-          handleApiError(response);
+          // handleApiError(response);
           throw new Error("データの更新に失敗しました");
         }
         const responseData = await response.json();
@@ -170,21 +168,17 @@ export default function AccountsPage() {
           body: JSON.stringify({
             ...editingAccount,
             password: editingAccount?.password ? await hash(editingAccount.password, 10) : "",
-            createdBy: session?.user?.name || "",
-            updatedBy: session?.user?.name || "",
+            createdBy: user?.name || "",
+            updatedBy: user?.name || "",
           }),
         });
 
         if (!response.ok) {
-          handleApiError(response);
+          // handleApiError(response);
           throw new Error("データの更新に失敗しました");
         }
         const responseData = await response.json();
-        setAccounts((prevAccounts) =>
-          prevAccounts.map((account) =>
-            account.id === responseData.data.id ? responseData.data : account
-          )
-        );
+        setAccounts((prevAccounts) => prevAccounts.map((account) => (account.id === responseData.data.id ? responseData.data : account)));
       }
 
       setIsModalOpen(false);
@@ -223,11 +217,7 @@ export default function AccountsPage() {
         </div>
       </div>
 
-      {deleteError && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          {deleteError}
-        </div>
-      )}
+      {deleteError && <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">{deleteError}</div>}
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
@@ -239,30 +229,17 @@ export default function AccountsPage() {
             <thead className="bg-orange-50">
               <tr>
                 <th className="w-12 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    onChange={handleSelectAll}
-                    checked={selectedAccounts.length === accounts.length}
-                    className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                  />
+                  <input type="checkbox" onChange={handleSelectAll} checked={selectedAccounts.length === accounts.length} className="rounded border-gray-300 text-orange-500 focus:ring-orange-500" />
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  ユーザーID
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">ユーザーID</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">名前</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">権限</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-                  保育園コード
-                </th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">保育園コード</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {accounts.map((account) => (
-                <tr
-                  key={account.id}
-                  className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => handleRowClick(account)}
-                >
+                <tr key={account.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(account)}>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
@@ -285,11 +262,7 @@ export default function AccountsPage() {
       {isModalOpen && editingAccount && (
         <div className="fixed inset-0 bg-gray-500/50 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">
-              {accounts.find((a) => a.id === editingAccount.id)
-                ? "アカウント編集"
-                : "アカウント登録"}
-            </h2>
+            <h2 className="text-xl font-bold mb-4">{accounts.find((a) => a.id === editingAccount.id) ? "アカウント編集" : "アカウント登録"}</h2>
             <div className="space-y-4">
               {!accounts.find((a) => a.id === editingAccount.id) && (
                 <div>
@@ -363,10 +336,7 @@ export default function AccountsPage() {
               >
                 キャンセル
               </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-              >
+              <button onClick={handleSave} className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
                 保存
               </button>
             </div>

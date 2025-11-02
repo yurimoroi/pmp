@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { handleApiError } from "@/utility/api/apiHelper";
+import { useUser } from "@/context/userContext";
+// import { handleApiError } from "@/utility/api/apiHelper";
 
 interface NameSelectProps {
   className: string;
@@ -9,22 +9,18 @@ interface NameSelectProps {
 }
 
 export function NameSelect({ className, onSelect, mode = "checkin" }: NameSelectProps) {
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery || "";
+  const { user } = useUser();
+  const nurseryName = user?.nickname || "";
 
   const [childList, setChildList] = useState<{ childId: number; name: string }[]>([]);
 
   useEffect(() => {
     const fetchChildData = async () => {
       try {
-        const response = await fetch(
-          `/api/children/names?nursery=${encodeURIComponent(
-            nurseryName
-          )}&className=${encodeURIComponent(className)}`
-        );
+        const response = await fetch(`/api/children/names?nursery=${encodeURIComponent(nurseryName)}&className=${encodeURIComponent(className)}`);
 
         if (!response.ok) {
-          handleApiError(response);
+          // handleApiError(response);
           throw new Error("データの取得に失敗しました");
         }
 

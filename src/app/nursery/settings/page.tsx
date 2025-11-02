@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { ToggleSwitch } from "@/components/ToggleSwitch";
-import { useSession, signOut } from "next-auth/react";
+import { useUser } from "@/context/userContext";
+import { signOut } from "aws-amplify/auth";
+
 import { useRouter } from "next/navigation";
 import { FullColorButton } from "@/components/common/Button";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery;
+  const { user } = useUser();
+  const nurseryName = user?.nickname;
 
   const [waterPlayEnabled, setWaterPlayEnabled] = useState(false);
   const [medicationEnabled, setMedicationEnabled] = useState(false);
@@ -62,7 +64,7 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     try {
-      await signOut({ redirect: false });
+      await signOut();
       router.push("/login");
     } catch (error) {
       console.error("ログアウトに失敗しました:", error);

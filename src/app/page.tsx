@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DashboardCard } from "@/components/DashboardCard";
 import { SchedulePopup } from "@/components/schedule/SchedulePopup";
+import { useUser } from "@/context/userContext";
 
 const menuItems = [
   {
@@ -63,8 +64,7 @@ const menuItems = [
 
 export default function DashboardPage() {
   const [isSchedulePopupOpen, setIsSchedulePopupOpen] = useState(false);
-  // const { data: session } = useSession();
-  // const userRole = session?.user?.role || "編集者";
+  const { user } = useUser();
 
   const handleCardClick = (href: string) => {
     if (href === "#") {
@@ -72,8 +72,7 @@ export default function DashboardPage() {
     }
   };
 
-  // const filteredMenuItems = menuItems.filter((item) => item.roles.includes(userRole));
-  const filteredMenuItems = menuItems.filter((item) => item.roles.includes("管理者"));
+  const filteredMenuItems = menuItems.filter((item) => item.roles.includes(user?.group || ""));
 
   return (
     <div className="p-8">

@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import { HealthCheckFormModal } from "@/components/admin/HealthCheckFormModal";
 import { AttendanceFormModal } from "@/components/admin/AttendanceFormModal";
 import { getNurseryClassName } from "@/utility/nursery";
-import { useSession } from "next-auth/react";
 import { FaHeartbeat, FaUsers } from "react-icons/fa";
+import { useUser } from "@/context/userContext";
 
 interface ReportModalProps {
   onClose: () => void;
 }
 
 export function ReportModal({ onClose }: ReportModalProps) {
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery;
+  const { user } = useUser();
 
   const [showHealthCheckForm, setShowHealthCheckForm] = useState(false);
   const [showAttendanceForm, setShowAttendanceForm] = useState(false);
@@ -20,15 +19,15 @@ export function ReportModal({ onClose }: ReportModalProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        if (!nurseryName) return;
-        const classNames = await getNurseryClassName(nurseryName);
+        if (!user?.nickname) return;
+        const classNames = await getNurseryClassName(user?.nickname);
         setClasses(classNames);
       } catch (error) {
         console.error("データの取得に失敗しました:", error);
       }
     };
     fetchData();
-  }, [nurseryName]);
+  }, [user?.nickname]);
 
   const handleHealthCheck = () => {
     setShowHealthCheckForm(true);
@@ -39,23 +38,11 @@ export function ReportModal({ onClose }: ReportModalProps) {
   };
 
   if (showHealthCheckForm) {
-    return (
-      <HealthCheckFormModal
-        nurseryName={nurseryName || ""}
-        classes={classes}
-        onClose={() => setShowHealthCheckForm(false)}
-      />
-    );
+    return <HealthCheckFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowHealthCheckForm(false)} />;
   }
 
   if (showAttendanceForm) {
-    return (
-      <AttendanceFormModal
-        nurseryName={nurseryName || ""}
-        classes={classes}
-        onClose={() => setShowAttendanceForm(false)}
-      />
-    );
+    return <AttendanceFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowAttendanceForm(false)} />;
   }
 
   return (
@@ -81,10 +68,7 @@ export function ReportModal({ onClose }: ReportModalProps) {
           </button>
         </div>
 
-        <button
-          onClick={onClose}
-          className="w-full mt-6 py-3 px-6 rounded-xl text-gray-500 font-bold hover:bg-gray-100 transition-colors duration-200"
-        >
+        <button onClick={onClose} className="w-full mt-6 py-3 px-6 rounded-xl text-gray-500 font-bold hover:bg-gray-100 transition-colors duration-200">
           キャンセル
         </button>
       </div>

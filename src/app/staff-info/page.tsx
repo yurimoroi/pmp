@@ -17,8 +17,8 @@ import {
   QualificationAllowance,
   PostAllowance,
 } from "@/types/staff";
-import { useSession } from "next-auth/react";
-import { handleApiError } from "@/utility/api/apiHelper";
+import { useUser } from "@/context/userContext";
+// import { handleApiError } from "@/utility/api/apiHelper";
 
 const defaultBasicInfo: StaffBasicInfo = {
   workerId: 0,
@@ -88,7 +88,7 @@ const defaultSalaryInfo: StaffSalaryInfo = {
 };
 
 export default function StaffInfoPage() {
-  const { data: session } = useSession();
+  const { user } = useUser();
 
   const [basicInfo, setBasicInfo] = useState<StaffBasicInfo>(defaultBasicInfo);
   const [salaryInfo, setSalaryInfo] = useState<StaffSalaryInfo>(defaultSalaryInfo);
@@ -140,7 +140,7 @@ export default function StaffInfoPage() {
           setCareers([]);
           return;
         }
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("職員情報の取得に失敗しました");
       }
       const data = (await response.json()) as StaffInfoResponse;
@@ -426,11 +426,11 @@ export default function StaffInfoPage() {
           basicInfo,
           salaryInfo,
           careers,
-          userName: session?.user?.name || "",
+          userName: user?.name || "",
         }),
       });
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("データの登録に失敗しました");
       }
       const data = await response.json();

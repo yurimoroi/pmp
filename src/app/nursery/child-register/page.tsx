@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { useSession } from "next-auth/react";
+import { useUser } from "@/context/userContext";
 import { getNurseryClassName } from "@/utility/nursery";
 import { ResponseChildren } from "@/types/api/response";
-import { ApiResponse, handleApiError } from "@/utility/api/apiHelper";
+// import { ApiResponse, handleApiError } from "@/utility/api/apiHelper";
 import { Button } from "@/components/common/Button";
 
 export default function ChildRegisterPage() {
   const router = useRouter();
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery || "";
+  const { user } = useUser();
+  const nurseryName = user?.nickname;
 
   const [childId, setChildId] = useState("");
   const [className, setClassName] = useState("");
@@ -33,64 +33,57 @@ export default function ChildRegisterPage() {
 
   // 園児データを取得する関数
   const fetchChildData = async (id: string, firstName: string, lastName: string, className: string) => {
-    if (className && (firstName === "" || lastName === "")) {
-      alert("クラスを指定する場合は、名前を入力してください。");
-      return;
-    }
-
-    try {
-      let responseData: ApiResponse<ResponseChildren>;
-
-      if (id) {
-        const response = await fetch(`/api/children/search/${id}`);
-        if (!response.ok) {
-          emptyForm();
-
-          if (response.status === 404) {
-            alert("該当する園児がいません。");
-            return;
-          }
-
-          handleApiError(response);
-          throw new Error("データの取得に失敗しました");
-        }
-        responseData = await response.json();
-      } else {
-        const response = await fetch(
-          `/api/children/search?name=${encodeURIComponent(`${lastName}　${firstName}`)}&className=${encodeURIComponent(className)}&nursery=${encodeURIComponent(nurseryName)}`
-        );
-        if (!response.ok) {
-          emptyForm();
-
-          if (response.status === 404) {
-            alert("該当する園児がいません。");
-            return;
-          }
-
-          handleApiError(response);
-          throw new Error("データの取得に失敗しました");
-        }
-        responseData = await response.json();
-      }
-      if (!responseData.data) {
-        throw new Error("データの取得に失敗しました");
-      }
-
-      // 取得したデータをフォームにセット
-      setChildId(responseData.data.childId.toString());
-      setClassName(responseData.data.className);
-      // 姓名を分割
-      const [last = "", first = ""] = responseData.data.name.split(/　/);
-      setLastName(last);
-      setFirstName(first);
-      setAdmissionAt(format(new Date(responseData.data.admissionAt), "yyyy-MM-dd"));
-      if (responseData.data.leavingAt) {
-        setLeavingAt(format(new Date(responseData.data.leavingAt), "yyyy-MM-dd"));
-      }
-    } catch (error) {
-      console.error("データの取得に失敗しました:", error);
-      alert("データの取得に失敗しました。");
-    }
+    //   if (className && (firstName === "" || lastName === "")) {
+    //     alert("クラスを指定する場合は、名前を入力してください。");
+    //     return;
+    //   }
+    //   try {
+    //     let responseData;
+    //     if (id) {
+    //       const response = await fetch(`/api/children/search/${id}`);
+    //       if (!response.ok) {
+    //         emptyForm();
+    //         if (response.status === 404) {
+    //           alert("該当する園児がいません。");
+    //           return;
+    //         }
+    //         // handleApiError(response);
+    //         throw new Error("データの取得に失敗しました");
+    //       }
+    //       responseData = await response.json();
+    //     } else {
+    //       const response = await fetch(
+    //         `/api/children/search?name=${encodeURIComponent(`${lastName}　${firstName}`)}&className=${encodeURIComponent(className)}&nursery=${encodeURIComponent(nurseryName)}`
+    //       );
+    //       if (!response.ok) {
+    //         emptyForm();
+    //         if (response.status === 404) {
+    //           alert("該当する園児がいません。");
+    //           return;
+    //         }
+    //         // handleApiError(response);
+    //         throw new Error("データの取得に失敗しました");
+    //       }
+    //       responseData = await response.json();
+    //     }
+    //     if (!responseData.data) {
+    //       throw new Error("データの取得に失敗しました");
+    //     }
+    //     // 取得したデータをフォームにセット
+    //     setChildId(responseData.data.childId.toString());
+    //     setClassName(responseData.data.className);
+    //     // 姓名を分割
+    //     const [last = "", first = ""] = responseData.data.name.split(/　/);
+    //     setLastName(last);
+    //     setFirstName(first);
+    //     setAdmissionAt(format(new Date(responseData.data.admissionAt), "yyyy-MM-dd"));
+    //     if (responseData.data.leavingAt) {
+    //       setLeavingAt(format(new Date(responseData.data.leavingAt), "yyyy-MM-dd"));
+    //     }
+    //   } catch (error) {
+    //     console.error("データの取得に失敗しました:", error);
+    //     alert("データの取得に失敗しました。");
+    //   }
   };
 
   useEffect(() => {
@@ -143,7 +136,7 @@ export default function ChildRegisterPage() {
         });
 
         if (!response.ok) {
-          handleApiError(response);
+          // handleApiError(response);
           throw new Error("更新に失敗しました");
         }
       } else {
@@ -163,7 +156,7 @@ export default function ChildRegisterPage() {
         });
 
         if (!response.ok) {
-          handleApiError(response);
+          // handleApiError(response);
           throw new Error("登録に失敗しました");
         }
       }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getNurseryClassName } from "@/utility/nursery";
-import { useSession } from "next-auth/react";
+import { useUser } from "@/context/userContext";
 
 interface ClassSelectProps {
   onSelect: (className: string) => void;
@@ -9,8 +9,8 @@ interface ClassSelectProps {
 
 export function ClassSelect({ onSelect, mode = "checkin" }: ClassSelectProps) {
   const [classList, setClassList] = useState<string[]>([]);
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery;
+  const { user } = useUser();
+  const nurseryName = user?.nickname || "";
 
   useEffect(() => {
     const fetchClasses = async () => {

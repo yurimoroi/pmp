@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useUser } from "@/context/userContext";
 import { getNurseryClassName, getNurseryNextClassName } from "@/utility/nursery";
 import { AnnualUpdateChildren } from "@/types/annualUpdateChildren";
 import AnnualUpdateFilter from "@/components/annualUpdate/AnnualUpdateFilter";
 import AnnualUpdateTable from "@/components/annualUpdate/AnnualUpdateTable";
-import { handleApiError } from "@/utility/api/apiHelper";
+// import { handleApiError } from "@/utility/api/apiHelper";
 
 export default function GraduatePage() {
-  const { data: session } = useSession();
-  const nurseryName = session?.user?.nursery || "";
+  const { user } = useUser();
+  const nurseryName = user?.nickname || "";
 
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [annualUpdateChildren, setAnnualUpdateChildren] = useState<AnnualUpdateChildren[]>([]);
@@ -54,7 +54,7 @@ export default function GraduatePage() {
       });
 
       if (!response.ok) {
-        handleApiError(response);
+        // handleApiError(response);
         throw new Error("年次更新に失敗しました");
       }
 
