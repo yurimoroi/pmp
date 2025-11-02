@@ -9,11 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@holiday-jp/holiday_jp": "^2.5.1",
+    "@react-pdf/renderer": "^4.3.1",
     "aws-amplify": "^6.15.7",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "lucide-react": "^0.552.0",
     "next": "16.0.1",
     "oidc-client-ts": "^3.3.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-icons": "^5.5.0",
     "react-oidc-context": "^3.3.0"
   },
   "devDependencies": {
