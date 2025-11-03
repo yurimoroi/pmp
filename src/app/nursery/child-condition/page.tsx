@@ -173,7 +173,7 @@ function ChildConditionPageContent() {
     };
 
     fetchSettings();
-  }, [nurseryName]);
+  }, [nurseryName, user?.nickname]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">

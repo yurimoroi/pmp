@@ -86,7 +86,7 @@ export default function GraduatePage() {
     };
 
     fetchNextClassNameData();
-  }, [nurseryName]);
+  }, [nurseryName, getNextClassName]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">

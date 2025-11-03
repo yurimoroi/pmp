@@ -1,12 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { hash } from "bcryptjs";
-import { useUser } from "@/context/userContext";
-// import { handleApiError } from "@/utility/api/apiHelper";
 
 type Account = {
-  id: string;
   userId: string;
   name: string;
   role: "管理者" | "編集者" | "閲覧者" | "保育園";
@@ -23,8 +19,6 @@ const roles = ["管理者", "編集者", "閲覧者", "保育園"] as const;
 const kindergartens = ["まつばら園", "しもばやし園", "なかじま園"] as const;
 
 export default function AccountsPage() {
-  const { user } = useUser();
-
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,17 +29,21 @@ export default function AccountsPage() {
 
   const fetchAccounts = async () => {
     try {
-      const response = await fetch(`/api/accounts`);
-      if (!response.ok) {
-        // handleApiError(response);
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-get", {
+        method: "GET",
+      });
+
+      if (response.status !== 200) {
         throw new Error("データの取得に失敗しました");
       }
 
-      const responseData = await response.json();
-      setAccounts(responseData.data);
+      const data = await response.json();
+      setAccounts(data);
       setIsLoading(false);
     } catch (error) {
       console.error("データの取得に失敗しました:", error);
+      alert("データの取得に失敗しました");
+      setIsLoading(false);
     }
   };
 
@@ -55,25 +53,24 @@ export default function AccountsPage() {
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      setSelectedAccounts(accounts.map((account) => account.id));
+      setSelectedAccounts(accounts.map((account) => account.userId));
     } else {
       setSelectedAccounts([]);
     }
   };
 
-  const handleSelectAccount = (id: string) => {
+  const handleSelectAccount = (userId: string) => {
     setSelectedAccounts((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((accountId) => accountId !== id);
+      if (prev.includes(userId)) {
+        return prev.filter((accountUserId) => accountUserId !== userId);
       } else {
-        return [...prev, id];
+        return [...prev, userId];
       }
     });
   };
 
   const handleRegister = () => {
     setEditingAccount({
-      id: "",
       userId: "",
       name: "",
       password: "",
@@ -90,21 +87,26 @@ export default function AccountsPage() {
       setDeleteError("削除するアカウントを選択してください。");
       return;
     }
+    console.log("selectedAccounts", selectedAccounts);
 
     try {
       setIsDeleting(true);
-      const response = await fetch(`/api/accounts`, {
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-delete", {
         method: "DELETE",
-        body: JSON.stringify(selectedAccounts),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          usernames: selectedAccounts,
+        }),
       });
-      if (!response.ok) {
-        // handleApiError(response);
+      if (response.status !== 200) {
         throw new Error("データの削除に失敗しました");
       }
 
-      setAccounts((prevAccounts) => prevAccounts.filter((account) => !selectedAccounts.includes(account.id)));
       setSelectedAccounts([]);
       setIsDeleting(false);
+      fetchAccounts();
     } catch (error) {
       console.error("データの削除に失敗しました:", error);
       setIsDeleting(false);
@@ -141,50 +143,51 @@ export default function AccountsPage() {
   const handleSave = async () => {
     if (!editingAccount) return;
     try {
-      if (!editingAccount.id) {
-        const response = await fetch(`/api/accounts`, {
+      if (!editingAccount.userId) {
+        const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-post", {
           method: "POST",
-          body: JSON.stringify({
-            ...editingAccount,
-            password: editingAccount?.password ? await hash(editingAccount.password, 10) : "",
-            createdBy: user?.name || "",
-            updatedBy: user?.name || "",
-          }),
-        });
-
-        if (!response.ok) {
-          // handleApiError(response);
-          throw new Error("データの更新に失敗しました");
-        }
-        const responseData = await response.json();
-
-        setAccounts((prevAccounts) => [...prevAccounts, responseData.data]);
-      } else {
-        const response = await fetch(`/api/accounts`, {
           headers: {
             "Content-Type": "application/json",
           },
-          method: "PATCH",
           body: JSON.stringify({
-            ...editingAccount,
-            password: editingAccount?.password ? await hash(editingAccount.password, 10) : "",
-            createdBy: user?.name || "",
-            updatedBy: user?.name || "",
+            username: editingAccount.userId,
+            name: editingAccount.name,
+            password: editingAccount.password,
+            nickname: editingAccount.nursery,
+            group: editingAccount.role,
           }),
         });
 
-        if (!response.ok) {
-          // handleApiError(response);
+        if (response.status !== 201) {
+          throw new Error("データの登録に失敗しました");
+        }
+
+        fetchAccounts();
+      } else {
+        const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-put", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: editingAccount.userId,
+            name: editingAccount.name,
+            password: editingAccount?.password ? editingAccount.password : "",
+            nickname: editingAccount.nursery,
+            group: editingAccount.role,
+          }),
+        });
+
+        if (response.status !== 200) {
           throw new Error("データの更新に失敗しました");
         }
-        const responseData = await response.json();
-        setAccounts((prevAccounts) => prevAccounts.map((account) => (account.id === responseData.data.id ? responseData.data : account)));
       }
 
       setIsModalOpen(false);
       setEditingAccount(null);
+      fetchAccounts();
     } catch (error) {
-      console.error("データの更新に失敗しました:", error);
+      console.error("データの保存に失敗しました:", error);
     }
   };
 
@@ -239,12 +242,12 @@ export default function AccountsPage() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {accounts.map((account) => (
-                <tr key={account.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(account)}>
+                <tr key={account.userId} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleRowClick(account)}>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
-                      checked={selectedAccounts.includes(account.id)}
-                      onChange={() => handleSelectAccount(account.id)}
+                      checked={selectedAccounts.includes(account.userId)}
+                      onChange={() => handleSelectAccount(account.userId)}
                       className="rounded border-gray-300 text-orange-500 focus:ring-orange-500"
                     />
                   </td>
@@ -262,9 +265,9 @@ export default function AccountsPage() {
       {isModalOpen && editingAccount && (
         <div className="fixed inset-0 bg-gray-500/50 backdrop-blur-sm flex items-center justify-center">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">{accounts.find((a) => a.id === editingAccount.id) ? "アカウント編集" : "アカウント登録"}</h2>
+            <h2 className="text-xl font-bold mb-4">{accounts.find((a) => a.userId === editingAccount.userId) ? "アカウント編集" : "アカウント登録"}</h2>
             <div className="space-y-4">
-              {!accounts.find((a) => a.id === editingAccount.id) && (
+              {!accounts.find((a) => a.userId === editingAccount.userId) && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700">ユーザーID</label>
                   <input

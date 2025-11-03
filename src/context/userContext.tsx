@@ -49,7 +49,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     loadUser();
-  }, []);
+  }, [router]);
 
   return <UserContext.Provider value={{ user, loading }}>{children}</UserContext.Provider>;
 };

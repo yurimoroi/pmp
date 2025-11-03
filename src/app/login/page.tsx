@@ -62,7 +62,7 @@ const LoginPage = () => {
       }
     };
     checkAuth();
-  }, []);
+  }, [router]);
 
   return (
     <div className="h-screen overflow-hidden flex items-center justify-center bg-gray-50">
