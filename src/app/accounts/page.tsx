@@ -7,12 +7,11 @@ type Account = {
   name: string;
   role: "管理者" | "編集者" | "閲覧者" | "保育園";
   nursery: string;
+  updateFlag: boolean;
 };
 
 type EditAccount = Account & {
   password: string;
-  createdBy: string;
-  updatedBy: string;
 };
 
 const roles = ["管理者", "編集者", "閲覧者", "保育園"] as const;
@@ -76,8 +75,7 @@ export default function AccountsPage() {
       password: "",
       role: "閲覧者",
       nursery: "",
-      createdBy: "",
-      updatedBy: "",
+      updateFlag: false,
     });
     setIsModalOpen(true);
   };
@@ -87,7 +85,6 @@ export default function AccountsPage() {
       setDeleteError("削除するアカウントを選択してください。");
       return;
     }
-    console.log("selectedAccounts", selectedAccounts);
 
     try {
       setIsDeleting(true);
@@ -117,8 +114,7 @@ export default function AccountsPage() {
     setEditingAccount({
       ...account,
       password: "",
-      createdBy: "",
-      updatedBy: "",
+      updateFlag: true,
     });
     setIsModalOpen(true);
   };
@@ -143,7 +139,7 @@ export default function AccountsPage() {
   const handleSave = async () => {
     if (!editingAccount) return;
     try {
-      if (!editingAccount.userId) {
+      if (!editingAccount.updateFlag) {
         const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-post", {
           method: "POST",
           headers: {
