@@ -20,35 +20,39 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
   const [listData, setListData] = useState<HealthCheckData[][]>([]);
 
   const fetchChildren = async () => {
-    const response = await fetch(
-      `/api/nursery/pdf/health-check?nursery=${encodeURIComponent(
-        nurseryName
-      )}&className=${encodeURIComponent(selectedClass)}&dateFrom=${encodeURIComponent(
-        dateFrom
-      )}&dateTo=${encodeURIComponent(dateTo)}`
-    );
-    const responseData = await response.json();
-    const rawData = responseData.data as HealthCheckData[];
+    const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/pdf/health-checks-get", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        nurseryName,
+        className: selectedClass,
+        from: dateFrom,
+        to: dateTo,
+      }),
+    });
 
-    if (!rawData || rawData.length === 0) {
-      alert("園児データがありません。");
-      return false;
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      if (response.status === 404) {
+        alert(body.message);
+        return false;
+      }
+      throw new Error(body.message);
     }
+    const rowData = body as HealthCheckData[];
 
     // attendanceAtでグループ化
-    const groupedData = rawData.reduce(
-      (acc: { [key: string]: HealthCheckData[] }, curr: HealthCheckData) => {
-        const dateKey = curr.attendanceAt
-          ? new Date(curr.attendanceAt).toISOString().split("T")[0]
-          : "null";
-        if (!acc[dateKey]) {
-          acc[dateKey] = [];
-        }
-        acc[dateKey].push(curr);
-        return acc;
-      },
-      {}
-    );
+    const groupedData = rowData.reduce((acc: { [key: string]: HealthCheckData[] }, curr: HealthCheckData) => {
+      const dateKey = curr.attendanceAt ? new Date(curr.attendanceAt).toISOString().split("T")[0] : "null";
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(curr);
+      return acc;
+    }, {});
 
     // 日付でソートして2次元配列に変換
     const sortedData = Object.entries(groupedData)
@@ -81,15 +85,10 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
     try {
       setIsGenerating(true);
 
-      const doc = await pdf(
-        <HealthCheckSheet className={selectedClass} listData={listData} />
-      ).toBlob();
+      const doc = await pdf(<HealthCheckSheet className={selectedClass} listData={listData} />).toBlob();
 
       // ファイル名を生成
-      const fileName = `健康チェック表_（${format(new Date(dateFrom), "yyyy.MM.dd")}-${format(
-        new Date(dateTo),
-        "yyyy.MM.dd"
-      )}_${selectedClass}ぐみ）.pdf`;
+      const fileName = `健康チェック表_（${format(new Date(dateFrom), "yyyy.MM.dd")}-${format(new Date(dateTo), "yyyy.MM.dd")}_${selectedClass}ぐみ）.pdf`;
 
       // Blobからダウンロードリンクを作成
       const url = URL.createObjectURL(doc);
@@ -121,21 +120,10 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold text-gray-700">プレビュー</h3>
             <div className="flex gap-2">
-              <Button
-                onClick={() => setShowPreview(false)}
-                variant="outline-secondary"
-                size="sm"
-                className="font-bold"
-              >
+              <Button onClick={() => setShowPreview(false)} variant="outline-secondary" size="sm" className="font-bold">
                 戻る
               </Button>
-              <Button
-                onClick={handleDownload}
-                variant="secondary"
-                size="sm"
-                className="font-bold"
-                disabled={isGenerating}
-              >
+              <Button onClick={handleDownload} variant="secondary" size="sm" className="font-bold" disabled={isGenerating}>
                 {isGenerating ? "生成中..." : "ダウンロード"}
               </Button>
             </div>
@@ -158,11 +146,7 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-gray-500 mb-2">クラス</label>
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none"
-            >
+            <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none">
               <option value="">選択してください</option>
               {classes.map((className) => (
                 <option key={className} value={className}>
@@ -174,44 +158,20 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
 
           <div>
             <label className="block text-sm text-gray-500 mb-2">期間（開始日）</label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => setDateFrom(e.target.value)}
-              className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none"
-            />
+            <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none" />
           </div>
 
           <div>
             <label className="block text-sm text-gray-500 mb-2">期間（終了日）</label>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => setDateTo(e.target.value)}
-              className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none"
-            />
+            <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none" />
           </div>
         </div>
 
         <div className="flex gap-4 mt-6">
-          <Button
-            type="button"
-            onClick={onClose}
-            variant="outline-secondary"
-            size="md"
-            className="flex-1"
-            disabled={isGenerating}
-          >
+          <Button type="button" onClick={onClose} variant="outline-secondary" size="md" className="flex-1" disabled={isGenerating}>
             キャンセル
           </Button>
-          <Button
-            type="button"
-            onClick={handlePreview}
-            variant="secondary"
-            size="md"
-            className="flex-1"
-            disabled={isGenerating}
-          >
+          <Button type="button" onClick={handlePreview} variant="secondary" size="md" className="flex-1" disabled={isGenerating}>
             プレビュー
           </Button>
         </div>

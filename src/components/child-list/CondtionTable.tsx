@@ -1,11 +1,4 @@
-import {
-  Pill as PillIcon,
-  AlertTriangle as ExclamationTriangleIcon,
-  Ban as BanIcon,
-  CheckCircle as CheckCircleIcon,
-  XCircle as XCircleIcon,
-  MinusCircle as MinusCircleIcon,
-} from "lucide-react";
+import { Pill as PillIcon, AlertTriangle as ExclamationTriangleIcon, Ban as BanIcon, CheckCircle as CheckCircleIcon, XCircle as XCircleIcon, MinusCircle as MinusCircleIcon } from "lucide-react";
 import { format } from "date-fns";
 import { Children } from "@/types/child-list";
 
@@ -63,29 +56,9 @@ const COMMON_CLASSES = {
   },
 } as const;
 
-const tableHeaders = [
-  "名前",
-  "出欠",
-  "登園時刻",
-  "降園時刻",
-  "お迎え予定時間",
-  "お迎え保護者",
-  "体温",
-  "体調",
-  "薬",
-  "外遊び",
-  "水遊び",
-  "欠席理由",
-  "出席停止",
-];
+const tableHeaders = ["名前", "出欠", "登園時刻", "降園時刻", "お迎え予定時間", "お迎え保護者", "体温", "体調", "薬", "外遊び", "水遊び", "欠席理由", "出席停止"];
 
-const ConditionTable = ({
-  children,
-  setEditingChildren,
-}: {
-  children: Children[];
-  setEditingChildren: (child: Children) => void;
-}) => {
+const ConditionTable = ({ children, setEditingChildren }: { children: Children[]; setEditingChildren: (child: Children) => void }) => {
   const handleEditClick = (child: Children) => {
     setEditingChildren(child);
   };
@@ -115,10 +88,7 @@ const ConditionTable = ({
         <thead>
           <tr className="bg-gray-50">
             {tableHeaders.map((header) => (
-              <th
-                key={header}
-                className={`py-4 px-6 text-left text-sm font-bold text-gray-500 min-w-[120px]`}
-              >
+              <th key={header} className={`py-4 px-6 text-left text-sm font-bold text-gray-500 min-w-[120px]`}>
                 {header}
               </th>
             ))}
@@ -130,83 +100,42 @@ const ConditionTable = ({
             <tr
               key={child.childId}
               onClick={() => handleEditClick(child)}
-              className={`border-t border-gray-100 hover:bg-violet-50 cursor-pointer transition-colors duration-200 ${getRowBackgroundClass(
-                child
-              )}`}
+              className={`border-t border-gray-100 hover:bg-violet-50 cursor-pointer transition-colors duration-200 ${getRowBackgroundClass(child)}`}
             >
               <td className={COMMON_CLASSES.tableCell}>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-gray-700">{child.children.name}</span>
-                  {child.stopAttendanceFlg && (
-                    <BanIcon
-                      className={`${COMMON_CLASSES.icon.medium} text-red-500`}
-                      aria-label="出席停止中"
-                    />
-                  )}
+                  <span className="font-bold text-gray-700">{child.name}</span>
+                  {child.stopAttendanceFlg && <BanIcon className={`${COMMON_CLASSES.icon.medium} text-red-500`} aria-label="出席停止中" />}
                 </div>
               </td>
               <td className={COMMON_CLASSES.tableCell}>
                 <span className={`${COMMON_CLASSES.statusBadge} ${getStatusBadgeClass(child)}`}>
-                  {child.attendanceAt && !child.absenceReason && (
-                    <CheckCircleIcon className={COMMON_CLASSES.icon.small} />
-                  )}
+                  {child.attendanceAt && !child.absenceReason && <CheckCircleIcon className={COMMON_CLASSES.icon.small} />}
                   {child.absenceReason && <XCircleIcon className={COMMON_CLASSES.icon.small} />}
-                  {!child.absenceReason && !child.attendanceAt && (
-                    <MinusCircleIcon className={COMMON_CLASSES.icon.small} />
-                  )}
+                  {!child.absenceReason && !child.attendanceAt && <MinusCircleIcon className={COMMON_CLASSES.icon.small} />}
                 </span>
               </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.attendanceTime ? format(child.attendanceTime, "HH:mm") : "-"}
-              </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.pickupTime ? format(child.pickupTime, "HH:mm") : "-"}
-              </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.pickupPlanTime ? child.pickupPlanTime : "-"}
-              </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.pickupPerson ? child.pickupPerson : "-"}
-              </td>
-              <td
-                className={`${COMMON_CLASSES.tableCell} ${getTemperatureStyle(
-                  child.bodyTemperature
-                )}`}
-              >
+              <td className={COMMON_CLASSES.tableCell}>{child.attendanceTime ? format(child.attendanceTime, "HH:mm") : "-"}</td>
+              <td className={COMMON_CLASSES.tableCell}>{child.pickupTime ? format(child.pickupTime, "HH:mm") : "-"}</td>
+              <td className={COMMON_CLASSES.tableCell}>{child.pickupPlanTime ? child.pickupPlanTime : "-"}</td>
+              <td className={COMMON_CLASSES.tableCell}>{child.pickupPerson ? child.pickupPerson : "-"}</td>
+              <td className={`${COMMON_CLASSES.tableCell} ${getTemperatureStyle(child.bodyTemperature)}`}>
                 {child.bodyTemperature ? (
                   <div className="flex items-center gap-1">
-                    {child.bodyTemperature >= 37.5 && (
-                      <ExclamationTriangleIcon
-                        className={`${COMMON_CLASSES.icon.medium} text-red-500`}
-                      />
-                    )}
+                    {child.bodyTemperature >= 37.5 && <ExclamationTriangleIcon className={`${COMMON_CLASSES.icon.medium} text-red-500`} />}
                     {child.bodyTemperature}℃
                   </div>
                 ) : (
                   "-"
                 )}
               </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.conditions ? child.conditions : "-"}
-              </td>
+              <td className={COMMON_CLASSES.tableCell}>{child.conditions ? child.conditions : "-"}</td>
               <td className={COMMON_CLASSES.tableCell}>
                 {child.takeMedicineFlg !== null ? (
                   <div className="flex items-center gap-1">
-                    {child.takeMedicineFlg && (
-                      <PillIcon className={`${COMMON_CLASSES.icon.medium} text-yellow-500`} />
-                    )}
-                    <span
-                      className={`${COMMON_CLASSES.medicineBadge} ${
-                        child.takeMedicineFlg
-                          ? COMMON_CLASSES.medicineBadgeVariant.has
-                          : COMMON_CLASSES.medicineBadgeVariant.none
-                      }`}
-                    >
-                      {child.takeMedicineFlg === true
-                        ? "有"
-                        : child.takeMedicineFlg === false
-                        ? "無"
-                        : ""}
+                    {child.takeMedicineFlg && <PillIcon className={`${COMMON_CLASSES.icon.medium} text-yellow-500`} />}
+                    <span className={`${COMMON_CLASSES.medicineBadge} ${child.takeMedicineFlg ? COMMON_CLASSES.medicineBadgeVariant.has : COMMON_CLASSES.medicineBadgeVariant.none}`}>
+                      {child.takeMedicineFlg === true ? "有" : child.takeMedicineFlg === false ? "無" : ""}
                     </span>
                   </div>
                 ) : (
@@ -217,18 +146,10 @@ const ConditionTable = ({
                 {child.playingOutside !== null ? (
                   <span
                     className={`${COMMON_CLASSES.playBadge} ${
-                      child.playingOutside === true
-                        ? COMMON_CLASSES.playBadgeVariant.ok
-                        : child.playingOutside === false
-                        ? COMMON_CLASSES.playBadgeVariant.ng
-                        : ""
+                      child.playingOutside === true ? COMMON_CLASSES.playBadgeVariant.ok : child.playingOutside === false ? COMMON_CLASSES.playBadgeVariant.ng : ""
                     }`}
                   >
-                    {child.playingOutside === true
-                      ? "OK"
-                      : child.playingOutside === false
-                      ? "NG"
-                      : ""}
+                    {child.playingOutside === true ? "OK" : child.playingOutside === false ? "NG" : ""}
                   </span>
                 ) : (
                   "-"
@@ -238,11 +159,7 @@ const ConditionTable = ({
                 {child.playingWater !== null ? (
                   <span
                     className={`${COMMON_CLASSES.playBadge} ${
-                      child.playingWater === true
-                        ? COMMON_CLASSES.playBadgeVariant.ok
-                        : child.playingWater === false
-                        ? COMMON_CLASSES.playBadgeVariant.ng
-                        : ""
+                      child.playingWater === true ? COMMON_CLASSES.playBadgeVariant.ok : child.playingWater === false ? COMMON_CLASSES.playBadgeVariant.ng : ""
                     }`}
                   >
                     {child.playingWater === true ? "OK" : child.playingWater === false ? "NG" : ""}
@@ -251,23 +168,11 @@ const ConditionTable = ({
                   "-"
                 )}
               </td>
-              <td className={COMMON_CLASSES.tableCell}>
-                {child.absenceReason ? child.absenceReason : "-"}
-              </td>
+              <td className={COMMON_CLASSES.tableCell}>{child.absenceReason ? child.absenceReason : "-"}</td>
               <td className={COMMON_CLASSES.tableCell}>
                 {child.absenceReason !== null ? (
-                  <span
-                    className={`${COMMON_CLASSES.attendanceBadge} ${
-                      child.stopAttendanceFlg
-                        ? COMMON_CLASSES.attendanceBadgeVariant.stopped
-                        : COMMON_CLASSES.attendanceBadgeVariant.normal
-                    }`}
-                  >
-                    {child.stopAttendanceFlg === true
-                      ? "停止中"
-                      : child.stopAttendanceFlg === false
-                      ? "通常"
-                      : ""}
+                  <span className={`${COMMON_CLASSES.attendanceBadge} ${child.stopAttendanceFlg ? COMMON_CLASSES.attendanceBadgeVariant.stopped : COMMON_CLASSES.attendanceBadgeVariant.normal}`}>
+                    {child.stopAttendanceFlg === true ? "停止中" : child.stopAttendanceFlg === false ? "通常" : ""}
                   </span>
                 ) : (
                   "-"

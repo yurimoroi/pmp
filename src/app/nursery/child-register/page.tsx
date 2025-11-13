@@ -33,57 +33,51 @@ export default function ChildRegisterPage() {
 
   // 園児データを取得する関数
   const fetchChildData = async (id: string, firstName: string, lastName: string, className: string) => {
-    //   if (className && (firstName === "" || lastName === "")) {
-    //     alert("クラスを指定する場合は、名前を入力してください。");
-    //     return;
-    //   }
-    //   try {
-    //     let responseData;
-    //     if (id) {
-    //       const response = await fetch(`/api/children/search/${id}`);
-    //       if (!response.ok) {
-    //         emptyForm();
-    //         if (response.status === 404) {
-    //           alert("該当する園児がいません。");
-    //           return;
-    //         }
-    //         // handleApiError(response);
-    //         throw new Error("データの取得に失敗しました");
-    //       }
-    //       responseData = await response.json();
-    //     } else {
-    //       const response = await fetch(
-    //         `/api/children/search?name=${encodeURIComponent(`${lastName}　${firstName}`)}&className=${encodeURIComponent(className)}&nursery=${encodeURIComponent(nurseryName)}`
-    //       );
-    //       if (!response.ok) {
-    //         emptyForm();
-    //         if (response.status === 404) {
-    //           alert("該当する園児がいません。");
-    //           return;
-    //         }
-    //         // handleApiError(response);
-    //         throw new Error("データの取得に失敗しました");
-    //       }
-    //       responseData = await response.json();
-    //     }
-    //     if (!responseData.data) {
-    //       throw new Error("データの取得に失敗しました");
-    //     }
-    //     // 取得したデータをフォームにセット
-    //     setChildId(responseData.data.childId.toString());
-    //     setClassName(responseData.data.className);
-    //     // 姓名を分割
-    //     const [last = "", first = ""] = responseData.data.name.split(/　/);
-    //     setLastName(last);
-    //     setFirstName(first);
-    //     setAdmissionAt(format(new Date(responseData.data.admissionAt), "yyyy-MM-dd"));
-    //     if (responseData.data.leavingAt) {
-    //       setLeavingAt(format(new Date(responseData.data.leavingAt), "yyyy-MM-dd"));
-    //     }
-    //   } catch (error) {
-    //     console.error("データの取得に失敗しました:", error);
-    //     alert("データの取得に失敗しました。");
-    //   }
+    if (className && (firstName === "" || lastName === "")) {
+      alert("クラスを指定する場合は、名前を入力してください。");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/search-get`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nurseryName: nurseryName,
+          className: className,
+          childId: id,
+          name: `${lastName} ${firstName}`,
+        }),
+      });
+
+      if (response.status !== 200) {
+        emptyForm();
+        const body = await response.json();
+        if (response.status === 404) {
+          alert(body.message);
+          return;
+        }
+        throw new Error(body.message);
+      }
+
+      const responseData = await response.json();
+      // 取得したデータをフォームにセット
+      setChildId(responseData.childId);
+      setClassName(responseData.className);
+      // 姓名を分割
+      const [last = "", first = ""] = responseData.name.split(/ /);
+      setLastName(last);
+      setFirstName(first);
+      setAdmissionAt(format(new Date(responseData.admissionAt), "yyyy-MM-dd"));
+      if (responseData.leavingAt) {
+        setLeavingAt(format(new Date(responseData.leavingAt), "yyyy-MM-dd"));
+      }
+    } catch (error) {
+      console.error("データの取得に失敗しました:", error);
+      alert((error as Error).message || "データの取得に失敗しました。");
+    }
   };
 
   useEffect(() => {
@@ -119,28 +113,26 @@ export default function ChildRegisterPage() {
 
     try {
       if (childId) {
-        const response = await fetch(`/api/children`, {
-          method: "PATCH",
+        const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/put", {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             childId,
-            nurseryName,
             className,
-            lastName,
-            firstName,
+            name: `${lastName} ${firstName}`,
             admissionAt,
             leavingAt: leavingAt || null,
           }),
         });
 
-        if (!response.ok) {
-          // handleApiError(response);
-          throw new Error("更新に失敗しました");
+        if (response.status !== 200) {
+          const body = await response.json();
+          throw new Error(body.message);
         }
       } else {
-        const response = await fetch("/api/children", {
+        const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/post", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -148,16 +140,15 @@ export default function ChildRegisterPage() {
           body: JSON.stringify({
             nurseryName,
             className,
-            lastName,
-            firstName,
+            name: `${lastName} ${firstName}`,
             admissionAt,
             leavingAt: leavingAt || null,
           }),
         });
 
-        if (!response.ok) {
-          // handleApiError(response);
-          throw new Error("登録に失敗しました");
+        if (response.status !== 200) {
+          const body = await response.json();
+          throw new Error(body.message);
         }
       }
 

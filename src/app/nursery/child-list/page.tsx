@@ -30,13 +30,14 @@ export default function ChildListPage() {
 
   const handleSaveAll = async () => {
     try {
-      const response = await fetch("/api/children/attendances", {
+      const filteredChildren = children.filter((child) => child.absenceReason !== null || child.attendanceTime !== null);
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/attendances-post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          children,
+          children: filteredChildren,
           date: selectedDate,
         }),
       });

@@ -1,0 +1,81 @@
+[
+  {
+    "type": {
+      "正社員": [
+        { "qualification": "保育士", "allowance": 25000 },
+        { "qualification": "幼稚園教諭", "allowance": 0 },
+        { "qualification": "管理栄養士", "allowance": 0 },
+        { "qualification": "栄養士", "allowance": 0 },
+        { "qualification": "調理師", "allowance": 25000 },
+        { "qualification": "調理員", "allowance": 25000 },
+        { "qualification": "事務員", "allowance": 15000 },
+        { "qualification": "保育補助", "allowance": 10000 },
+        { "qualification": "みなし保育士", "allowance": 5000 },
+        { "qualification": "保育補助1", "allowance": 0 },
+        { "qualification": "保育補助2", "allowance": 10000 },
+        { "qualification": "看護師", "allowance": 25000 },
+        { "qualification": "准看護師", "allowance": 5000 }
+      ],
+      "短時間正社員": [
+        { "qualification": "保育士", "allowance": 25000 },
+        { "qualification": "幼稚園教諭", "allowance": 0 },
+        { "qualification": "管理栄養士", "allowance": 0 },
+        { "qualification": "栄養士", "allowance": 0 },
+        { "qualification": "調理師", "allowance": 25000 },
+        { "qualification": "調理員", "allowance": 25000 },
+        { "qualification": "事務員", "allowance": 15000 },
+        { "qualification": "保育補助", "allowance": 10000 },
+        { "qualification": "みなし保育士", "allowance": 5000 },
+        { "qualification": "保育補助1", "allowance": 0 },
+        { "qualification": "保育補助2", "allowance": 10000 },
+        { "qualification": "看護師", "allowance": 25000 },
+        { "qualification": "准看護師", "allowance": 5000 }
+      ],
+      "多様な正社員": [
+        { "qualification": "保育士", "allowance": 25000 },
+        { "qualification": "幼稚園教諭", "allowance": 0 },
+        { "qualification": "管理栄養士", "allowance": 0 },
+        { "qualification": "栄養士", "allowance": 0 },
+        { "qualification": "調理師", "allowance": 25000 },
+        { "qualification": "調理員", "allowance": 25000 },
+        { "qualification": "事務員", "allowance": 15000 },
+        { "qualification": "保育補助", "allowance": 10000 },
+        { "qualification": "みなし保育士", "allowance": 5000 },
+        { "qualification": "保育補助1", "allowance": 0 },
+        { "qualification": "保育補助2", "allowance": 10000 },
+        { "qualification": "看護師", "allowance": 25000 },
+        { "qualification": "准看護師", "allowance": 5000 }
+      ],
+      "パート": [
+        { "qualification": "保育士", "allowance": 100 },
+        { "qualification": "幼稚園教諭", "allowance": 30 },
+        { "qualification": "管理栄養士", "allowance": 60 },
+        { "qualification": "栄養士", "allowance": 250 },
+        { "qualification": "調理師", "allowance": 100 },
+        { "qualification": "調理員", "allowance": 100 },
+        { "qualification": "事務員", "allowance": 80 },
+        { "qualification": "保育補助", "allowance": 60 },
+        { "qualification": "みなし保育士", "allowance": 20 },
+        { "qualification": "保育補助1", "allowance": 0 },
+        { "qualification": "保育補助2", "allowance": 60 },
+        { "qualification": "看護師", "allowance": 100 },
+        { "qualification": "准看護師", "allowance": 0 }
+      ],
+      "無期パート": [
+        { "qualification": "保育士", "allowance": 100 },
+        { "qualification": "幼稚園教諭", "allowance": 30 },
+        { "qualification": "管理栄養士", "allowance": 60 },
+        { "qualification": "栄養士", "allowance": 250 },
+        { "qualification": "調理師", "allowance": 100 },
+        { "qualification": "調理員", "allowance": 100 },
+        { "qualification": "事務員", "allowance": 80 },
+        { "qualification": "保育補助", "allowance": 60 },
+        { "qualification": "みなし保育士", "allowance": 20 },
+        { "qualification": "保育補助1", "allowance": 0 },
+        { "qualification": "保育補助2", "allowance": 60 },
+        { "qualification": "看護師", "allowance": 100 },
+        { "qualification": "准看護師", "allowance": 0 }
+      ]
+    }
+  }
+]

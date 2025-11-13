@@ -34,7 +34,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
     let attendanceData2 = [...attendanceData];
 
     let childId = data[0].childId;
-    let childName = data[0].children.name;
+    let childName = data[0].name;
 
     const listData: ListData[] = [];
 
@@ -45,17 +45,14 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
           attendance: attendanceData2,
           attendanceDateCount: attendanceData2.filter((attendance) => attendance === "〇").length,
           diseaseCount: attendanceData2.filter((attendance) => attendance.includes("病")).length,
-          circumstanceCount: attendanceData2.filter((attendance) => attendance.includes("事"))
-            .length,
-          otherCount: attendanceData2.filter(
-            (attendance) => attendance.includes("通") || attendance.includes("災")
-          ).length,
+          circumstanceCount: attendanceData2.filter((attendance) => attendance.includes("事")).length,
+          otherCount: attendanceData2.filter((attendance) => attendance.includes("通") || attendance.includes("災")).length,
           stopCount: attendanceData2.filter((attendance) => attendance.includes("停")).length,
         };
         listData.push(listData2);
         attendanceData2 = [...attendanceData];
         childId = child.childId;
-        childName = child.children.name;
+        childName = child.name;
       }
 
       if (child.attendanceAt) {
@@ -107,15 +104,28 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
 
   const fetchChildren = async () => {
     try {
-      const response = await fetch(
-        `/api/nursery/pdf/attendances?nursery=${encodeURIComponent(
-          nurseryName
-        )}&className=${encodeURIComponent(selectedClass)}&yearMonth=${encodeURIComponent(
-          yearMonth
-        )}`
-      );
+      const from = new Date(`${yearMonth}-01`);
+      const to = new Date(`${yearMonth}-${getDaysInMonth(from)}`);
+
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/pdf/attendances-get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nurseryName,
+          className: selectedClass,
+          from: format(from, "yyyy-MM-dd"),
+          to: format(to, "yyyy-MM-dd"),
+        }),
+      });
+
       const responseData = await response.json();
-      processAttendanceData(responseData.data);
+
+      if (response.status !== 200) {
+        throw new Error(responseData.message);
+      }
+      processAttendanceData(responseData);
     } catch (error) {
       console.error("園児データ取得エラー:", error);
       alert("園児データの取得に失敗しました。もう一度お試しください。");
@@ -143,14 +153,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
 
       await fetchChildren();
 
-      const doc = await pdf(
-        <AttendanceSheet
-          className={selectedClass}
-          yearMonth={yearMonth}
-          listData={listData}
-          dataCount={dataCount}
-        />
-      ).toBlob();
+      const doc = await pdf(<AttendanceSheet className={selectedClass} yearMonth={yearMonth} listData={listData} dataCount={dataCount} />).toBlob();
 
       const [year, month] = yearMonth.split("-");
       const fileName = `出席簿_（${year}.${month}_${selectedClass}ぐみ）.pdf`;
@@ -182,33 +185,17 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-bold text-gray-700">プレビュー</h3>
             <div className="flex gap-2">
-              <Button
-                onClick={() => setShowPreview(false)}
-                variant="outline-secondary"
-                size="sm"
-                className="font-bold"
-              >
+              <Button onClick={() => setShowPreview(false)} variant="outline-secondary" size="sm" className="font-bold">
                 戻る
               </Button>
-              <Button
-                onClick={handleDownload}
-                variant="secondary"
-                size="sm"
-                className="font-bold"
-                disabled={isGenerating}
-              >
+              <Button onClick={handleDownload} variant="secondary" size="sm" className="font-bold" disabled={isGenerating}>
                 {isGenerating ? "生成中..." : "ダウンロード"}
               </Button>
             </div>
           </div>
           <div className="flex-1 w-full bg-gray-100 rounded-xl overflow-hidden">
             <PDFViewer width="100%" height="100%" style={{ border: "none" }}>
-              <AttendanceSheet
-                className={selectedClass}
-                yearMonth={yearMonth}
-                listData={listData}
-                dataCount={dataCount}
-              />
+              <AttendanceSheet className={selectedClass} yearMonth={yearMonth} listData={listData} dataCount={dataCount} />
             </PDFViewer>
           </div>
         </div>
@@ -224,11 +211,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-gray-500 mb-2">クラス</label>
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none"
-            >
+            <select value={selectedClass} onChange={(e) => setSelectedClass(e.target.value)} className="w-full p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none">
               <option value="">選択してください</option>
               {classes.map((className) => (
                 <option key={className} value={className}>
@@ -250,24 +233,10 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
         </div>
 
         <div className="flex gap-4 mt-6">
-          <Button
-            type="button"
-            onClick={onClose}
-            variant="outline-secondary"
-            size="md"
-            className="flex-1"
-            disabled={isGenerating}
-          >
+          <Button type="button" onClick={onClose} variant="outline-secondary" size="md" className="flex-1" disabled={isGenerating}>
             キャンセル
           </Button>
-          <Button
-            type="button"
-            onClick={handlePreview}
-            variant="secondary"
-            size="md"
-            className="flex-1"
-            disabled={isGenerating}
-          >
+          <Button type="button" onClick={handlePreview} variant="secondary" size="md" className="flex-1" disabled={isGenerating}>
             プレビュー
           </Button>
         </div>

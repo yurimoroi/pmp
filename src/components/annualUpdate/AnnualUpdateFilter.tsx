@@ -27,25 +27,38 @@ const AnnualUpdateFilter = ({
 }: AnnualUpdateFilterProps) => {
   // 園児リストを取得
   const fetchCandidates = async () => {
-    const response = await fetch(`/api/children/lists/annual-updates?nursery=${nurseryName}&className=${selectedClass}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/annual-updates-get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nurseryName: nurseryName,
+          className: selectedClass,
+          year: new Date().getFullYear(),
+        }),
+      });
 
-    if (!response.ok) {
-      // handleApiError(response);
-      throw new Error("年次更新に失敗しました");
+      if (response.status !== 200) {
+        const body = await response.json();
+        throw new Error(body.message);
+      }
+
+      const responseData = await response.json();
+      console.log(responseData);
+
+      // 次のクラス名を設定
+      responseData.forEach((child: AnnualUpdateChildren) => {
+        child.nextClassName = nextClasses[0];
+      });
+
+      setAnnualUpdateChildren(responseData);
+    } catch (error) {
+      console.error("データの取得に失敗しました:", error);
+      alert((error as Error).message || "エラーが発生しました。もう一度お試しください。");
+      return;
     }
-    const responseData = await response.json();
-
-    // 次のクラス名を設定
-    responseData.data.forEach((child: AnnualUpdateChildren) => {
-      child.nextClassName = nextClasses[0];
-    });
-
-    setAnnualUpdateChildren(responseData.data);
   };
 
   return (
@@ -58,7 +71,7 @@ const AnnualUpdateFilter = ({
             setSelectedClass(e.target.value);
             getNextClassName(e.target.value);
           }}
-          className="w-48 p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none"
+          className="w-48 p-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none text-gray-700"
         >
           {classes.map((className) => (
             <option key={className} value={className}>

@@ -1,0 +1,22 @@
+[
+  {
+    "period": 0,
+    "wage": 0
+  },
+  {
+    "period": 2,
+    "wage": 10
+  },
+  {
+    "period": 3,
+    "wage": 20
+  },
+  {
+    "period": 5,
+    "wage": 30
+  },
+  {
+    "period": 10,
+    "wage": 50
+  }
+]

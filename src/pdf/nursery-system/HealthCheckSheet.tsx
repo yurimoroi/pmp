@@ -16,9 +16,7 @@ const createEmptyRow = (): HealthCheckData => ({
   attendanceAt: null,
   attendanceTime: null,
   bodyTemperature: null,
-  children: {
-    name: "",
-  },
+  name: "",
   childId: 0,
   pickupPerson: null,
   pickupPlanTime: null,
@@ -47,75 +45,53 @@ export const HealthCheckSheet: React.FC<HealthCheckSheetProps> = ({ className, l
               <Text style={styles.title}>健康チェック表</Text>
 
               <View style={styles.subtitle}>
-                <Text style={styles.date}>
-                  {format(pageDate, "yyyy年MM月dd日（EEEE）", { locale: ja })}
-                </Text>
+                <Text style={styles.date}>{format(pageDate, "yyyy年MM月dd日（EEEE）", { locale: ja })}</Text>
                 <Text style={styles.className}>{`${className}ぐみ`}</Text>
               </View>
             </View>
 
             <View style={styles.table}>
               <View style={styles.tableHeader}>
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "5%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "5%" }}>
                   <Text>No.</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "25%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "25%" }}>
                   <Text>園児名</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}>
                   <Text>登園時刻</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}>
                   <Text>お迎え時刻</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "7%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "7%" }}>
                   <Text>{`お迎え\nの方`}</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "12%" }}>
                   <Text>{`登園時の\n体温`}</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}>
                   <Text>{`お薬の\n有・無`}</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}>
                   <Text>外遊び</Text>
                 </View>
 
-                <View
-                  style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}
-                >
+                <View style={{ ...styles.tableHeaderCell, ...commonStyles.textCenter, width: "9%" }}>
                   <Text>水遊び</Text>
                 </View>
               </View>
 
               {displayData.map((data, index) => (
                 <View key={index} style={styles.tableBodyRow}>
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "5%" }}
-                  >
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "5%" }}>
                     <Text>{index + 1}</Text>
                   </View>
 
@@ -127,63 +103,35 @@ export const HealthCheckSheet: React.FC<HealthCheckSheetProps> = ({ className, l
                       paddingLeft: "5px",
                     }}
                   >
-                    <Text>{data.children.name}</Text>
+                    <Text>{data.name}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}
-                  >
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}>
                     <Text>{data.attendanceTime ? format(data.attendanceTime, "HH:mm") : ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}
-                  >
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}>
                     <Text>{data.pickupPlanTime || ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "7%" }}
-                  >
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "7%" }}>
                     <Text>{data.pickupPerson || ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}
-                  >
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "12%" }}>
                     <Text>{data.bodyTemperature ? `${data.bodyTemperature.toFixed(1)}℃` : ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}
-                  >
-                    <Text>
-                      {data.takeMedicineFlg === true
-                        ? "あり"
-                        : data.takeMedicineFlg === false
-                        ? "なし"
-                        : ""}
-                    </Text>
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}>
+                    <Text>{data.takeMedicineFlg === true ? "あり" : data.takeMedicineFlg === false ? "なし" : ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}
-                  >
-                    <Text>
-                      {data.playingOutside === true
-                        ? "〇"
-                        : data.playingOutside === false
-                        ? "×"
-                        : ""}
-                    </Text>
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}>
+                    <Text>{data.playingOutside === true ? "〇" : data.playingOutside === false ? "×" : ""}</Text>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}
-                  >
-                    <Text>
-                      {data.playingWater === true ? "〇" : data.playingWater === false ? "×" : ""}
-                    </Text>
+                  <View style={{ ...styles.tableBodyCell, ...commonStyles.textCenter, width: "9%" }}>
+                    <Text>{data.playingWater === true ? "〇" : data.playingWater === false ? "×" : ""}</Text>
                   </View>
                 </View>
               ))}

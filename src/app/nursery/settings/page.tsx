@@ -34,23 +34,22 @@ export default function SettingsPage() {
     try {
       setIsSaving(true);
 
-      const settings = {
-        nurseryName,
-        playingWaterDisplayFlg: waterPlayEnabled,
-        takeMedicineDisplayFlg: medicationEnabled,
-      };
-
       // 設定を保存
-      const saveResponse = await fetch("/api/nursery/settings", {
-        method: "PATCH",
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/settings-put", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(settings),
+        body: JSON.stringify({
+          nurseryName,
+          playingWaterDisplayFlg: waterPlayEnabled,
+          takeMedicineDisplayFlg: medicationEnabled,
+        }),
       });
 
-      if (!saveResponse.ok) {
-        throw new Error("設定の保存に失敗しました");
+      if (response.status !== 200) {
+        const body = await response.json();
+        throw new Error(body.message);
       }
 
       setIsDirty(false);
@@ -73,10 +72,24 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const response = await fetch(`/api/nursery/settings?nursery=${nurseryName}`);
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/settings-get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nurseryName,
+        }),
+      });
+
+      if (response.status !== 200) {
+        const body = await response.json();
+        throw new Error(body.message);
+      }
+
       const data = await response.json();
-      setWaterPlayEnabled(data.data.playingWaterDisplayFlg);
-      setMedicationEnabled(data.data.takeMedicineDisplayFlg);
+      setWaterPlayEnabled(data.playingWaterDisplayFlg);
+      setMedicationEnabled(data.takeMedicineDisplayFlg);
     };
 
     fetchSettings();

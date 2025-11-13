@@ -17,19 +17,30 @@ export function NameSelect({ className, onSelect, mode = "checkin" }: NameSelect
   useEffect(() => {
     const fetchChildData = async () => {
       try {
-        const response = await fetch(`/api/children/names?nursery=${encodeURIComponent(nurseryName)}&className=${encodeURIComponent(className)}`);
+        const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/names-get", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nurseryName: nurseryName,
+            className: className,
+          }),
+        });
 
-        if (!response.ok) {
-          // handleApiError(response);
+        if (response.status !== 200) {
           throw new Error("データの取得に失敗しました");
         }
 
         const responseData = await response.json();
-        setChildList(responseData.data.map((child: { childId: number; name: string }) => child));
+
+        setChildList(responseData);
       } catch (error) {
         console.error("データの取得に失敗しました:", error);
+        return;
       }
     };
+
     fetchChildData();
   }, [nurseryName, className]);
 

@@ -23,13 +23,23 @@ const Filter = ({
 }) => {
   const fetchChild = async () => {
     try {
-      const response = await fetch(`/api/children/attendances?nursery=${encodeURIComponent(nurseryName)}&className=${encodeURIComponent(selectedClass)}&date=${encodeURIComponent(selectedDate)}`);
-      if (!response.ok) {
-        // handleApiError(response);
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/attendances-get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nurseryName: nurseryName,
+          className: selectedClass,
+          date: selectedDate,
+        }),
+      });
+      if (response.status !== 200) {
         throw new Error("データの取得に失敗しました");
       }
+
       const responseData = await response.json();
-      setChildren(responseData.data);
+      setChildren(responseData);
     } catch (error) {
       console.error("データの取得に失敗しました:", error);
     }

@@ -1,0 +1,7 @@
+[
+  { "type": "正社員", "area": "愛知県", "allowance": 10000 },
+  { "type": "短時間正社員", "area": "愛知県", "allowance": 10000 },
+  { "type": "多様な正社員", "area": "愛知県", "allowance": 10000 },
+  { "type": "パート", "area": "愛知県", "allowance": 140 },
+  { "type": "無期パート", "area": "愛知県", "allowance": 140 }
+]

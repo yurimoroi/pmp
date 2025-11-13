@@ -6,7 +6,6 @@ import { getNurseryClassName, getNurseryNextClassName } from "@/utility/nursery"
 import { AnnualUpdateChildren } from "@/types/annualUpdateChildren";
 import AnnualUpdateFilter from "@/components/annualUpdate/AnnualUpdateFilter";
 import AnnualUpdateTable from "@/components/annualUpdate/AnnualUpdateTable";
-// import { handleApiError } from "@/utility/api/apiHelper";
 
 export default function GraduatePage() {
   const { user } = useUser();
@@ -42,7 +41,7 @@ export default function GraduatePage() {
     setIsProcessing(true);
 
     try {
-      const response = await fetch("/api/nursery/annual-update", {
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/annual-updates-post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,20 +49,21 @@ export default function GraduatePage() {
         body: JSON.stringify({
           nurseryName,
           children: annualUpdateChildren,
+          year: new Date().getFullYear(),
         }),
       });
 
-      if (!response.ok) {
-        // handleApiError(response);
-        throw new Error("年次更新に失敗しました");
+      if (response.status !== 200) {
+        const body = await response.json();
+        throw new Error(body.message);
       }
 
-      alert("年次更新が完了しました。");
+      alert(`${selectedClass}クラスの年次更新が完了しました。`);
       setIsProcessing(false);
       setAnnualUpdateChildren([]);
     } catch (error) {
       console.error("年次更新中にエラーが発生しました:", error);
-      alert("年次更新中にエラーが発生しました。もう一度お試しください。");
+      alert((error as Error).message || "年次更新中にエラーが発生しました。もう一度お試しください。");
       setIsProcessing(false);
     }
   };
@@ -86,7 +86,7 @@ export default function GraduatePage() {
     };
 
     fetchNextClassNameData();
-  }, [nurseryName, getNextClassName]);
+  }, [nurseryName]);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">

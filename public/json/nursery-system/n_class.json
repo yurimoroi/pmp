@@ -1,0 +1,116 @@
+{
+  "しもばやし園": [
+    {
+      "class": "たんぽぽ",
+      "display_flg": true
+    },
+    {
+      "class": "ちゅうりっぷ",
+      "display_flg": true
+    },
+    {
+      "class": "さくら",
+      "display_flg": true
+    },
+    {
+      "class": "ふじ",
+      "display_flg": false
+    },
+    {
+      "class": "ゆり",
+      "display_flg": false
+    },
+    {
+      "class": "もも",
+      "display_flg": true
+    },
+    {
+      "class": "すみれ",
+      "display_flg": true
+    },
+    {
+      "class": "ひまわり",
+      "display_flg": true
+    },
+    {
+      "class": "一時保育",
+      "display_flg": false
+    }
+  ],
+  "なかじま園": [
+    {
+      "class": "たんぽぽ",
+      "display_flg": true
+    },
+    {
+      "class": "ちゅうりっぷ",
+      "display_flg": true
+    },
+    {
+      "class": "さくら",
+      "display_flg": true
+    },
+    {
+      "class": "ふじ",
+      "display_flg": false
+    },
+    {
+      "class": "ゆり",
+      "display_flg": false
+    },
+    {
+      "class": "もも",
+      "display_flg": false
+    },
+    {
+      "class": "すみれ",
+      "display_flg": false
+    },
+    {
+      "class": "ひまわり",
+      "display_flg": false
+    },
+    {
+      "class": "一時保育",
+      "display_flg": false
+    }
+  ],
+  "まつばら園": [
+    {
+      "class": "たんぽぽ",
+      "display_flg": true
+    },
+    {
+      "class": "ちゅうりっぷ",
+      "display_flg": true
+    },
+    {
+      "class": "さくら",
+      "display_flg": true
+    },
+    {
+      "class": "ふじ",
+      "display_flg": true
+    },
+    {
+      "class": "ゆり",
+      "display_flg": true
+    },
+    {
+      "class": "もも",
+      "display_flg": false
+    },
+    {
+      "class": "すみれ",
+      "display_flg": false
+    },
+    {
+      "class": "ひまわり",
+      "display_flg": false
+    },
+    {
+      "class": "一時保育",
+      "display_flg": false
+    }
+  ]
+}

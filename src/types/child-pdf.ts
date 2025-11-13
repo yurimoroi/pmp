@@ -2,9 +2,7 @@ export interface HealthCheckData {
   attendanceAt: Date | null;
   attendanceTime: Date | null;
   bodyTemperature: number | null;
-  children: {
-    name: string;
-  };
+  name: string;
   childId: number;
   pickupPerson: string | null;
   pickupPlanTime: string | null;
@@ -16,9 +14,7 @@ export interface HealthCheckData {
 export interface AttendanceData {
   absenceReason: string | null;
   attendanceAt: Date | null;
-  children: {
-    name: string;
-  };
+  name: string;
   childId: number;
   stopAttendanceFlg: boolean | null;
 }

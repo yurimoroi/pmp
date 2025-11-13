@@ -4,13 +4,9 @@ export interface Children {
   attendanceAt: Date | null;
   attendanceTime: Date | null;
   bodyTemperature: number | null;
-  children: {
-    childId: number;
-    name: string;
-  };
+  name: string;
   childId: number;
   conditions: string | null;
-  id: string | null;
   pickupPerson: string | null;
   pickupPlanTime: string | null;
   pickupTime: Date | null;

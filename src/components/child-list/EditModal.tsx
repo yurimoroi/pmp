@@ -1,8 +1,4 @@
-import {
-  absenseReasonOptions,
-  conditionOptions,
-  pickupPersonOptions,
-} from "@/options/nursery-system/options";
+import { absenseReasonOptions, conditionOptions, pickupPersonOptions } from "@/options/nursery-system/options";
 import { Children } from "@/types/child-list";
 import { useState } from "react";
 import { Button } from "../common/Button";
@@ -11,12 +7,9 @@ import { getPickupTime } from "@/utility/nursery";
 // 共通のクラス名を定数として管理
 const COMMON_CLASSES = {
   label: "pl-2 text-sm text-gray-500",
-  input:
-    "w-full h-11 px-3 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none",
-  textarea:
-    "w-full px-3 py-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none resize-none h-32",
-  select:
-    "w-full h-11 px-3 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none",
+  input: "w-full h-11 px-3 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none",
+  textarea: "w-full px-3 py-2 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none resize-none h-32",
+  select: "w-full h-11 px-3 rounded-xl border-2 border-gray-100 focus:border-violet-400 focus:outline-none",
 } as const;
 
 interface EditModalProps {
@@ -28,14 +21,7 @@ interface EditModalProps {
   onClose: () => void;
 }
 
-export default function EditModal({
-  children,
-  isWaterPlayEnabled,
-  isMedicationEnabled,
-  date,
-  onSave,
-  onClose,
-}: EditModalProps) {
+export default function EditModal({ children, isWaterPlayEnabled, isMedicationEnabled, date, onSave, onClose }: EditModalProps) {
   const [editedChildren, setEditedChildren] = useState<Children>(children);
 
   const times = getPickupTime();
@@ -61,15 +47,10 @@ export default function EditModal({
       editedChildren.playingWater === null
     ) {
       if (!editedChildren.absenceReason && editedChildren.stopAttendanceFlg !== null) {
-        alert(
-          "登園時刻・お迎え予定時間・お迎え保護者・薬の有無・体温・体調・外遊び・水遊びのいずれかが入力されていません。"
-        );
+        alert("登園時刻・お迎え予定時間・お迎え保護者・薬の有無・体温・体調・外遊び・水遊びのいずれかが入力されていません。");
         return;
       } else {
-        if (
-          (editedChildren.absenceReason && editedChildren.stopAttendanceFlg === null) ||
-          (!editedChildren.absenceReason && editedChildren.stopAttendanceFlg !== null)
-        ) {
+        if ((editedChildren.absenceReason && editedChildren.stopAttendanceFlg === null) || (!editedChildren.absenceReason && editedChildren.stopAttendanceFlg !== null)) {
           alert("欠席理由または出席停止が入力されていません。");
           return;
         }
@@ -83,41 +64,47 @@ export default function EditModal({
 
     // 非表示項目確認
     if (!isMedicationEnabled && editedChildren.takeMedicineFlg !== null) {
-      const result = confirm(
-        "設定では薬の有無は非表示になっています。\n薬の有無が入力されていますが、よろしいですか？"
-      );
+      const result = confirm("設定では薬の有無は非表示になっています。\n薬の有無が入力されていますが、よろしいですか？");
       if (!result) {
         return;
       }
     }
     if (!isWaterPlayEnabled && editedChildren.playingWater !== null) {
-      const result = confirm(
-        "設定では水遊びは非表示になっています。\n水遊びが入力されていますが、よろしいですか？"
-      );
+      const result = confirm("設定では水遊びは非表示になっています。\n水遊びが入力されていますが、よろしいですか？");
       if (!result) {
         return;
       }
     }
 
     if (editedChildren.absenceReason) {
-      editedChildren.attendanceAt = date;
-      editedChildren.attendanceTime = null;
-      editedChildren.pickupTime = null;
-      editedChildren.bodyTemperature = null;
-      editedChildren.conditions = "";
-      editedChildren.pickupPlanTime = "";
-      editedChildren.pickupPerson = "";
-      editedChildren.takeMedicineFlg = null;
-      editedChildren.playingOutside = null;
-      editedChildren.playingWater = null;
+      setEditedChildren({
+        ...editedChildren,
+        attendanceAt: date,
+        attendanceTime: null,
+        pickupTime: null,
+        bodyTemperature: null,
+        conditions: "",
+        pickupPlanTime: "",
+        pickupPerson: "",
+        takeMedicineFlg: null,
+        playingOutside: null,
+        playingWater: null,
+      });
     } else {
-      editedChildren.absenceReasonDetail = "";
-      editedChildren.stopAttendanceFlg = null;
-
       if (editedChildren.attendanceTime) {
-        editedChildren.attendanceAt = date;
+        setEditedChildren({
+          ...editedChildren,
+          absenceReasonDetail: "",
+          stopAttendanceFlg: null,
+          attendanceAt: date,
+        });
       } else {
-        editedChildren.attendanceAt = null;
+        setEditedChildren({
+          ...editedChildren,
+          absenceReasonDetail: "",
+          stopAttendanceFlg: null,
+          attendanceAt: null,
+        });
       }
     }
     onSave(editedChildren);
@@ -127,9 +114,7 @@ export default function EditModal({
   return (
     <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-bold text-gray-700 mb-4">
-          {children.children.name}さんの情報編集
-        </h3>
+        <h3 className="text-xl font-bold text-gray-700 mb-4">{children.name}さんの情報編集</h3>
 
         <div className="grid grid-cols-2 gap-4">
           {/* 左列 */}
@@ -203,13 +188,7 @@ export default function EditModal({
             {/* 体調入力 */}
             <div>
               <label className={COMMON_CLASSES.label}>体調</label>
-              <select
-                value={editedChildren.conditions || ""}
-                onChange={(e) =>
-                  setEditedChildren({ ...editedChildren, conditions: e.target.value })
-                }
-                className={COMMON_CLASSES.select}
-              >
+              <select value={editedChildren.conditions || ""} onChange={(e) => setEditedChildren({ ...editedChildren, conditions: e.target.value })} className={COMMON_CLASSES.select}>
                 <option value="">選択してください</option>
                 {conditionOptions.map((option) => (
                   <option key={option} value={option}>
@@ -222,13 +201,7 @@ export default function EditModal({
             {/* お迎え時間 */}
             <div>
               <label className={COMMON_CLASSES.label}>お迎え時間</label>
-              <select
-                value={editedChildren.pickupPlanTime || ""}
-                onChange={(e) =>
-                  setEditedChildren({ ...editedChildren, pickupPlanTime: e.target.value })
-                }
-                className={COMMON_CLASSES.select}
-              >
+              <select value={editedChildren.pickupPlanTime || ""} onChange={(e) => setEditedChildren({ ...editedChildren, pickupPlanTime: e.target.value })} className={COMMON_CLASSES.select}>
                 <option value="">選択してください</option>
                 {times.map((option) => (
                   <option key={option} value={option}>
@@ -241,13 +214,7 @@ export default function EditModal({
             {/* お迎え者 */}
             <div>
               <label className={COMMON_CLASSES.label}>お迎え保護者</label>
-              <select
-                value={editedChildren.pickupPerson || ""}
-                onChange={(e) =>
-                  setEditedChildren({ ...editedChildren, pickupPerson: e.target.value })
-                }
-                className={COMMON_CLASSES.select}
-              >
+              <select value={editedChildren.pickupPerson || ""} onChange={(e) => setEditedChildren({ ...editedChildren, pickupPerson: e.target.value })} className={COMMON_CLASSES.select}>
                 <option value="">選択してください</option>
                 {pickupPersonOptions.map((option) => (
                   <option key={option} value={option}>
@@ -261,18 +228,11 @@ export default function EditModal({
             <div>
               <label className={COMMON_CLASSES.label}>薬の有無</label>
               <select
-                value={
-                  editedChildren.takeMedicineFlg === true
-                    ? "true"
-                    : editedChildren.takeMedicineFlg === false
-                    ? "false"
-                    : ""
-                }
+                value={editedChildren.takeMedicineFlg === true ? "true" : editedChildren.takeMedicineFlg === false ? "false" : ""}
                 onChange={(e) =>
                   setEditedChildren({
                     ...editedChildren,
-                    takeMedicineFlg:
-                      e.target.value === "true" ? true : e.target.value === "false" ? false : null,
+                    takeMedicineFlg: e.target.value === "true" ? true : e.target.value === "false" ? false : null,
                   })
                 }
                 className={COMMON_CLASSES.select}
@@ -290,18 +250,11 @@ export default function EditModal({
             <div>
               <label className={COMMON_CLASSES.label}>外遊び</label>
               <select
-                value={
-                  editedChildren.playingOutside === true
-                    ? "true"
-                    : editedChildren.playingOutside === false
-                    ? "false"
-                    : ""
-                }
+                value={editedChildren.playingOutside === true ? "true" : editedChildren.playingOutside === false ? "false" : ""}
                 onChange={(e) =>
                   setEditedChildren({
                     ...editedChildren,
-                    playingOutside:
-                      e.target.value === "true" ? true : e.target.value === "false" ? false : null,
+                    playingOutside: e.target.value === "true" ? true : e.target.value === "false" ? false : null,
                   })
                 }
                 className={COMMON_CLASSES.select}
@@ -316,18 +269,11 @@ export default function EditModal({
             <div>
               <label className={COMMON_CLASSES.label}>水遊び</label>
               <select
-                value={
-                  editedChildren.playingWater === true
-                    ? "true"
-                    : editedChildren.playingWater === false
-                    ? "false"
-                    : ""
-                }
+                value={editedChildren.playingWater === true ? "true" : editedChildren.playingWater === false ? "false" : ""}
                 onChange={(e) =>
                   setEditedChildren({
                     ...editedChildren,
-                    playingWater:
-                      e.target.value === "true" ? true : e.target.value === "false" ? false : null,
+                    playingWater: e.target.value === "true" ? true : e.target.value === "false" ? false : null,
                   })
                 }
                 className={COMMON_CLASSES.select}
@@ -388,18 +334,11 @@ export default function EditModal({
             <div>
               <label className={COMMON_CLASSES.label}>出席停止</label>
               <select
-                value={
-                  editedChildren.stopAttendanceFlg === true
-                    ? "true"
-                    : editedChildren.stopAttendanceFlg === false
-                    ? "false"
-                    : ""
-                }
+                value={editedChildren.stopAttendanceFlg === true ? "true" : editedChildren.stopAttendanceFlg === false ? "false" : ""}
                 onChange={(e) =>
                   setEditedChildren({
                     ...editedChildren,
-                    stopAttendanceFlg:
-                      e.target.value === "true" ? true : e.target.value === "false" ? false : null,
+                    stopAttendanceFlg: e.target.value === "true" ? true : e.target.value === "false" ? false : null,
                   })
                 }
                 className={COMMON_CLASSES.select}

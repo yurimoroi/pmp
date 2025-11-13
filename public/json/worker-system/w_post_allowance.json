@@ -1,0 +1,27 @@
+[
+  {
+    "type": {
+      "正社員": [
+        { "post": "上級園長", "allowance": 130000 },
+        { "post": "園長", "allowance": 110000 },
+        { "post": "主任", "allowance": 55000 },
+        { "post": "リーダー", "allowance": 15000 },
+        { "post": "一般", "allowance": 0 }
+      ],
+      "短時間正社員": [
+        { "post": "上級園長", "allowance": 130000 },
+        { "post": "園長", "allowance": 110000 },
+        { "post": "主任", "allowance": 55000 },
+        { "post": "リーダー", "allowance": 15000 },
+        { "post": "一般", "allowance": 0 }
+      ],
+      "多様な正社員": [
+        { "post": "上級園長", "allowance": 130000 },
+        { "post": "園長", "allowance": 110000 },
+        { "post": "主任", "allowance": 55000 },
+        { "post": "リーダー", "allowance": 15000 },
+        { "post": "一般", "allowance": 0 }
+      ]
+    }
+  }
+]

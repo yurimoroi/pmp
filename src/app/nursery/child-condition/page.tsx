@@ -10,12 +10,30 @@ import { PlaySelect } from "@/components/child-condition/PlaySelect";
 import { AbsenceReasonSelect } from "@/components/child-condition/AbsenceReasonSelect";
 import { ConfirmScreen } from "@/components/child-condition/ConfirmScreen";
 import { useUser } from "@/context/userContext";
-// import { handleApiError } from "@/utility/api/apiHelper";
 import { ActionButton } from "@/components/common/Button";
+import { Children } from "@/types/child-list";
 
 type CheckinStep = "class" | "name" | "pickup" | "condition" | "play" | "reason" | "confirm" | "complete";
 type CheckoutStep = "class" | "name" | "confirm" | "complete";
 type AbsenceStep = "class" | "name" | "reason" | "confirm" | "complete";
+
+const initialChildren: Children = {
+  absenceReason: null,
+  absenceReasonDetail: null,
+  attendanceAt: null,
+  attendanceTime: null,
+  bodyTemperature: null,
+  name: "",
+  childId: 0,
+  conditions: null,
+  pickupPerson: null,
+  pickupPlanTime: null,
+  pickupTime: null,
+  playingOutside: null,
+  playingWater: null,
+  stopAttendanceFlg: null,
+  takeMedicineFlg: null,
+};
 
 function ChildConditionPageContent() {
   const { user } = useUser();
@@ -27,6 +45,7 @@ function ChildConditionPageContent() {
 
   const [step, setStep] = useState<CheckinStep | CheckoutStep | AbsenceStep>("class");
   const [selectedClassName, setSelectedClassName] = useState<string>("");
+  const [children, setChildren] = useState<Children>(initialChildren);
   const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
   const [selectedChildName, setSelectedChildName] = useState<string>("");
   const [pickupTime, setPickupTime] = useState<string | null>(null);
@@ -50,6 +69,7 @@ function ChildConditionPageContent() {
   const handleNameSelect = (childId: number, name: string) => {
     setSelectedChildId(childId);
     setSelectedChildName(name);
+    setChildren({ ...children, childId, name });
     if (mode === "checkin") {
       setStep("pickup");
     } else if (mode === "checkout") {
@@ -62,6 +82,7 @@ function ChildConditionPageContent() {
   const handlePickupComplete = (time: string, personName: string) => {
     setPickupTime(time);
     setPickupPersonName(personName);
+    setChildren({ ...children, pickupPlanTime: time, pickupPerson: personName });
     setStep("condition");
   };
 
@@ -69,12 +90,14 @@ function ChildConditionPageContent() {
     setTemperature(temp);
     setCondition(cond);
     setHasMedicine(hasMedicine);
+    setChildren({ ...children, bodyTemperature: temp, conditions: cond, takeMedicineFlg: hasMedicine });
     setStep("play");
   };
 
-  const handlePlayComplete = (outdoorPlay: boolean, waterPlay: boolean | null) => {
-    setCanOutdoorPlay(outdoorPlay);
-    setCanWaterPlay(waterPlay);
+  const handlePlayComplete = (plauingOutside: boolean, playingWater: boolean | null) => {
+    setCanOutdoorPlay(plauingOutside);
+    setCanWaterPlay(playingWater);
+    setChildren({ ...children, playingOutside: plauingOutside, playingWater: playingWater });
     setStep("confirm");
   };
 
@@ -82,6 +105,7 @@ function ChildConditionPageContent() {
     setAbsenceReason(reason);
     setAbsenceDetail(detail);
     setIsSuspension(isSuspension);
+    setChildren({ ...children, absenceReason: reason, absenceReasonDetail: detail, stopAttendanceFlg: isSuspension });
     setStep("confirm");
   };
 
@@ -117,39 +141,31 @@ function ChildConditionPageContent() {
   };
 
   const handleConfirm = async () => {
+    console.log(children);
     try {
-      const response = await fetch("/api/children/conditions", {
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/conditions-post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           mode,
-          childId: selectedChildId,
-          pickupPlanTime: pickupTime,
-          pickupPerson: pickupPersonName,
-          bodyTemperature: temperature,
-          conditions: condition,
-          takeMedicineFlg: isMedicationEnabled ? hasMedicine : null,
-          playingOutside: canOutdoorPlay,
-          playingWater: isWaterPlayEnabled ? canWaterPlay : null,
-          absenceReason,
-          absenceReasonDetail: absenceDetail,
-          stopAttendanceFlg: isSuspension,
+          children,
         }),
       });
 
-      if (!response.ok) {
-        // handleApiError(response);
+      if (response.status !== 200) {
+        const body = await response.json();
 
-        if (response.status === 400) {
-          return;
+        if (response.status === 404) {
+          throw new Error(body.message);
         }
-        throw new Error("登録に失敗しました");
+
+        throw new Error(body.message);
       }
     } catch (error) {
       console.error("エラーが発生しました:", error);
-      alert("処理に失敗しました。もう一度お試しください。");
+      alert((error as Error).message || "エラーが発生しました。もう一度お試しください。");
       return;
     }
 
