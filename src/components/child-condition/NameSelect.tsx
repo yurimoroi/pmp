@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/userContext";
+import { signOut } from "aws-amplify/auth";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 // import { handleApiError } from "@/utility/api/apiHelper";
 
 interface NameSelectProps {
   className: string;
   onSelect: (childId: number, name: string) => void;
   mode?: "checkin" | "checkout" | "absence";
+  router: AppRouterInstance;
+  token: string | undefined;
 }
 
-export function NameSelect({ className, onSelect, mode = "checkin" }: NameSelectProps) {
+export function NameSelect({ className, onSelect, mode = "checkin", router, token }: NameSelectProps) {
   const { user } = useUser();
   const nurseryName = user?.nickname || "";
 
@@ -21,6 +25,7 @@ export function NameSelect({ className, onSelect, mode = "checkin" }: NameSelect
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             nurseryName: nurseryName,
@@ -29,6 +34,12 @@ export function NameSelect({ className, onSelect, mode = "checkin" }: NameSelect
         });
 
         if (response.status !== 200) {
+          if (response.status === 401) {
+            alert("セッションが切れました。再度ログインしてください。");
+            signOut();
+            router.push("/login");
+            return;
+          }
           throw new Error("データの取得に失敗しました");
         }
 

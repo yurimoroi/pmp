@@ -5,14 +5,18 @@ import { AttendanceSheet, AttendanceStatus, ListData } from "@/pdf/nursery-syste
 import { AttendanceData } from "@/types/child-pdf";
 import { isHoliday } from "@/utility/nursery";
 import { Button } from "../common/Button";
+import { signOut } from "aws-amplify/auth";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface AttendanceFormModalProps {
   nurseryName: string;
   classes: string[];
   onClose: () => void;
+  router: AppRouterInstance;
+  token: string | undefined;
 }
 
-export function AttendanceFormModal({ nurseryName, classes, onClose }: AttendanceFormModalProps) {
+export function AttendanceFormModal({ nurseryName, classes, onClose, router, token }: AttendanceFormModalProps) {
   const [selectedClass, setSelectedClass] = useState("");
   const [yearMonth, setYearMonth] = useState(format(new Date(), "yyyy-MM"));
   const [isGenerating, setIsGenerating] = useState(false);
@@ -111,6 +115,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nurseryName,
@@ -123,6 +128,13 @@ export function AttendanceFormModal({ nurseryName, classes, onClose }: Attendanc
       const responseData = await response.json();
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         throw new Error(responseData.message);
       }
       processAttendanceData(responseData);

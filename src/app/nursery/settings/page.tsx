@@ -39,6 +39,7 @@ export default function SettingsPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           nurseryName,
@@ -48,6 +49,13 @@ export default function SettingsPage() {
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         const body = await response.json();
         throw new Error(body.message);
       }
@@ -76,6 +84,7 @@ export default function SettingsPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           nurseryName,
@@ -83,6 +92,13 @@ export default function SettingsPage() {
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         const body = await response.json();
         throw new Error(body.message);
       }

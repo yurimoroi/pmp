@@ -1,6 +1,7 @@
 import { FullColorButton } from "@/components/common/Button";
 import { AnnualUpdateChildren } from "@/types/annualUpdateChildren";
-// import { handleApiError } from "@/utility/api/apiHelper";
+import { signOut } from "aws-amplify/auth";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface AnnualUpdateFilterProps {
   nurseryName: string;
@@ -12,6 +13,8 @@ interface AnnualUpdateFilterProps {
   nextClasses: string[];
   handleAnnualUpdate: () => void;
   isProcessing: boolean;
+  router: AppRouterInstance;
+  token: string | undefined;
 }
 
 const AnnualUpdateFilter = ({
@@ -24,6 +27,8 @@ const AnnualUpdateFilter = ({
   nextClasses,
   handleAnnualUpdate,
   isProcessing,
+  router,
+  token,
 }: AnnualUpdateFilterProps) => {
   // 園児リストを取得
   const fetchCandidates = async () => {
@@ -32,6 +37,7 @@ const AnnualUpdateFilter = ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nurseryName: nurseryName,
@@ -41,6 +47,13 @@ const AnnualUpdateFilter = ({
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         const body = await response.json();
         throw new Error(body.message);
       }

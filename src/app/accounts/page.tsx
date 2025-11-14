@@ -1,6 +1,9 @@
 "use client";
 
+import { useUser } from "@/context/userContext";
+import { signOut } from "aws-amplify/auth";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type Account = {
   userId: string;
@@ -18,6 +21,9 @@ const roles = ["管理者", "編集者", "閲覧者", "保育園"] as const;
 const kindergartens = ["まつばら園", "しもばやし園", "なかじま園"] as const;
 
 export default function AccountsPage() {
+  const { user } = useUser();
+  const router = useRouter();
+
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,9 +36,18 @@ export default function AccountsPage() {
     try {
       const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/accounts-get", {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${user?.token}`,
+        },
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
         throw new Error("データの取得に失敗しました");
       }
 
@@ -92,12 +107,19 @@ export default function AccountsPage() {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           usernames: selectedAccounts,
         }),
       });
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
         throw new Error("データの削除に失敗しました");
       }
 
@@ -144,6 +166,7 @@ export default function AccountsPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
           },
           body: JSON.stringify({
             username: editingAccount.userId,
@@ -155,6 +178,12 @@ export default function AccountsPage() {
         });
 
         if (response.status !== 201) {
+          if (response.status === 401) {
+            alert("セッションが切れました。再度ログインしてください。");
+            signOut();
+            router.push("/login");
+            return;
+          }
           throw new Error("データの登録に失敗しました");
         }
 
@@ -164,6 +193,7 @@ export default function AccountsPage() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
           },
           body: JSON.stringify({
             username: editingAccount.userId,
@@ -175,6 +205,12 @@ export default function AccountsPage() {
         });
 
         if (response.status !== 200) {
+          if (response.status === 401) {
+            alert("セッションが切れました。再度ログインしてください。");
+            signOut();
+            router.push("/login");
+            return;
+          }
           throw new Error("データの更新に失敗しました");
         }
       }

@@ -6,10 +6,13 @@ import { getNurseryClassName, getNurseryNextClassName } from "@/utility/nursery"
 import { AnnualUpdateChildren } from "@/types/annualUpdateChildren";
 import AnnualUpdateFilter from "@/components/annualUpdate/AnnualUpdateFilter";
 import AnnualUpdateTable from "@/components/annualUpdate/AnnualUpdateTable";
+import { signOut } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
 
 export default function GraduatePage() {
   const { user } = useUser();
   const nurseryName = user?.nickname || "";
+  const router = useRouter();
 
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [annualUpdateChildren, setAnnualUpdateChildren] = useState<AnnualUpdateChildren[]>([]);
@@ -45,6 +48,7 @@ export default function GraduatePage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           nurseryName,
@@ -54,6 +58,13 @@ export default function GraduatePage() {
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         const body = await response.json();
         throw new Error(body.message);
       }
@@ -104,6 +115,8 @@ export default function GraduatePage() {
           nextClasses={nextClasses}
           handleAnnualUpdate={handleAnnualUpdate}
           isProcessing={isProcessing}
+          router={router}
+          token={user?.token}
         />
 
         {/* 卒園対象園児テーブル */}

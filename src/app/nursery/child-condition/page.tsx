@@ -12,6 +12,7 @@ import { ConfirmScreen } from "@/components/child-condition/ConfirmScreen";
 import { useUser } from "@/context/userContext";
 import { ActionButton } from "@/components/common/Button";
 import { Children } from "@/types/child-list";
+import { signOut } from "aws-amplify/auth";
 
 type CheckinStep = "class" | "name" | "pickup" | "condition" | "play" | "reason" | "confirm" | "complete";
 type CheckoutStep = "class" | "name" | "confirm" | "complete";
@@ -147,6 +148,7 @@ function ChildConditionPageContent() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           mode,
@@ -155,6 +157,12 @@ function ChildConditionPageContent() {
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
         const body = await response.json();
 
         if (response.status === 404) {
@@ -200,7 +208,7 @@ function ChildConditionPageContent() {
 
         {step === "name" && selectedClassName && (
           <>
-            <NameSelect className={selectedClassName} onSelect={handleNameSelect} mode={mode} />
+            <NameSelect className={selectedClassName} onSelect={handleNameSelect} mode={mode} router={router} token={user?.token} />
             <div className="mt-8">
               <ActionButton onClick={handleBack} variant={mode === "absence" ? "tertiary-secondary" : "tertiary-primary"}>
                 戻る

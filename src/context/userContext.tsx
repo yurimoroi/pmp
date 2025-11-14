@@ -10,6 +10,7 @@ type UserInfo = {
   sub?: string;
   group?: string;
   nickname?: string;
+  token?: string;
 };
 
 type UserContextType = {
@@ -38,7 +39,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         const payload = idToken?.payload;
         const userGroups = payload?.["cognito:groups"] || [];
         const group = userGroups ? (userGroups as string[])[0] : undefined;
-        setUser({ ...attributes, group });
+        const token = idToken?.toString();
+        setUser({ ...attributes, group, token });
       } catch (error) {
         console.error("ユーザー情報の取得に失敗しました:", error);
         setUser(null);

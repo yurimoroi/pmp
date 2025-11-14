@@ -4,14 +4,18 @@ import { pdf, PDFViewer } from "@react-pdf/renderer";
 import { HealthCheckSheet } from "@/pdf/nursery-system/HealthCheckSheet";
 import { HealthCheckData } from "@/types/child-pdf";
 import { Button } from "../common/Button";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { signOut } from "aws-amplify/auth";
 
 interface HealthCheckFormModalProps {
   nurseryName: string;
   classes: string[];
   onClose: () => void;
+  router: AppRouterInstance;
+  token: string | undefined;
 }
 
-export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCheckFormModalProps) {
+export function HealthCheckFormModal({ nurseryName, classes, onClose, router, token }: HealthCheckFormModalProps) {
   const [selectedClass, setSelectedClass] = useState("");
   const [dateFrom, setDateFrom] = useState(format(new Date(), "yyyy-MM-dd"));
   const [dateTo, setDateTo] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -24,6 +28,7 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         nurseryName,
@@ -36,6 +41,12 @@ export function HealthCheckFormModal({ nurseryName, classes, onClose }: HealthCh
     const body = await response.json();
 
     if (response.status !== 200) {
+      if (response.status === 401) {
+        alert("セッションが切れました。再度ログインしてください。");
+        signOut();
+        router.push("/login");
+        return;
+      }
       if (response.status === 404) {
         alert(body.message);
         return false;

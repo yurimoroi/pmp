@@ -4,6 +4,7 @@ import { AttendanceFormModal } from "@/components/admin/AttendanceFormModal";
 import { getNurseryClassName } from "@/utility/nursery";
 import { FaHeartbeat, FaUsers } from "react-icons/fa";
 import { useUser } from "@/context/userContext";
+import { useRouter } from "next/navigation";
 
 interface ReportModalProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface ReportModalProps {
 
 export function ReportModal({ onClose }: ReportModalProps) {
   const { user } = useUser();
+  const router = useRouter();
 
   const [showHealthCheckForm, setShowHealthCheckForm] = useState(false);
   const [showAttendanceForm, setShowAttendanceForm] = useState(false);
@@ -38,11 +40,11 @@ export function ReportModal({ onClose }: ReportModalProps) {
   };
 
   if (showHealthCheckForm) {
-    return <HealthCheckFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowHealthCheckForm(false)} />;
+    return <HealthCheckFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowHealthCheckForm(false)} router={router} token={user?.token} />;
   }
 
   if (showAttendanceForm) {
-    return <AttendanceFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowAttendanceForm(false)} />;
+    return <AttendanceFormModal nurseryName={user?.nickname || ""} classes={classes} onClose={() => setShowAttendanceForm(false)} router={router} token={user?.token} />;
   }
 
   return (

@@ -6,13 +6,15 @@ import { useUser } from "@/context/userContext";
 import { getNurseryClassName } from "@/utility/nursery";
 import { Children } from "@/types/child-list";
 import EditModal from "@/components/child-list/EditModal";
-// import { handleApiError } from "@/utility/api/apiHelper";
 import ConditionTable from "@/components/child-list/CondtionTable";
 import Filter from "@/components/child-list/Filter";
+import { signOut } from "aws-amplify/auth";
+import { useRouter } from "next/navigation";
 
 export default function ChildListPage() {
   const { user } = useUser();
   const nurseryName = user?.nickname || "";
+  const router = useRouter();
 
   const [selectedClass, setSelectedClass] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
@@ -35,6 +37,7 @@ export default function ChildListPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           children: filteredChildren,
@@ -42,9 +45,16 @@ export default function ChildListPage() {
         }),
       });
 
-      if (!response.ok) {
-        // handleApiError(response);
-        throw new Error("登録に失敗しました");
+      if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
+        const body = await response.json();
+        throw new Error(body.message);
       }
 
       alert("更新が完了しました。");
@@ -93,6 +103,8 @@ export default function ChildListPage() {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           handleSaveAll={handleSaveAll}
+          router={router}
+          token={user?.token}
         />
 
         {/* 園児一覧テーブル */}

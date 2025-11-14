@@ -8,6 +8,7 @@ import { getNurseryClassName } from "@/utility/nursery";
 import { ResponseChildren } from "@/types/api/response";
 // import { ApiResponse, handleApiError } from "@/utility/api/apiHelper";
 import { Button } from "@/components/common/Button";
+import { signOut } from "aws-amplify/auth";
 
 export default function ChildRegisterPage() {
   const router = useRouter();
@@ -43,6 +44,7 @@ export default function ChildRegisterPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({
           nurseryName: nurseryName,
@@ -53,6 +55,13 @@ export default function ChildRegisterPage() {
       });
 
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         emptyForm();
         const body = await response.json();
         if (response.status === 404) {
@@ -117,6 +126,7 @@ export default function ChildRegisterPage() {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
           },
           body: JSON.stringify({
             childId,
@@ -128,6 +138,13 @@ export default function ChildRegisterPage() {
         });
 
         if (response.status !== 200) {
+          if (response.status === 401) {
+            alert("セッションが切れました。再度ログインしてください。");
+            signOut();
+            router.push("/login");
+            return;
+          }
+
           const body = await response.json();
           throw new Error(body.message);
         }
@@ -136,6 +153,7 @@ export default function ChildRegisterPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${user?.token}`,
           },
           body: JSON.stringify({
             nurseryName,
@@ -147,6 +165,13 @@ export default function ChildRegisterPage() {
         });
 
         if (response.status !== 200) {
+          if (response.status === 401) {
+            alert("セッションが切れました。再度ログインしてください。");
+            signOut();
+            router.push("/login");
+            return;
+          }
+
           const body = await response.json();
           throw new Error(body.message);
         }

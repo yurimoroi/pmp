@@ -1,6 +1,20 @@
 import { FullColorButton } from "@/components/common/Button";
 import { Children } from "@/types/child-list";
-// import { handleApiError } from "@/utility/api/apiHelper";
+import { signOut } from "aws-amplify/auth";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+interface FilterProps {
+  nurseryName: string;
+  setChildren: (children: Children[]) => void;
+  selectedClass: string;
+  setSelectedClass: (className: string) => void;
+  classes: string[];
+  selectedDate: string;
+  setSelectedDate: (date: string) => void;
+  handleSaveAll: () => void;
+  router: AppRouterInstance;
+  token: string | undefined;
+}
 
 const Filter = ({
   nurseryName,
@@ -11,22 +25,16 @@ const Filter = ({
   selectedDate,
   setSelectedDate,
   handleSaveAll,
-}: {
-  nurseryName: string;
-  setChildren: (children: Children[]) => void;
-  selectedClass: string;
-  setSelectedClass: (className: string) => void;
-  classes: string[];
-  selectedDate: string;
-  setSelectedDate: (date: string) => void;
-  handleSaveAll: () => void;
-}) => {
+  router,
+  token,
+}: FilterProps) => {
   const fetchChild = async () => {
     try {
       const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/children/attendances-get", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           nurseryName: nurseryName,
@@ -35,6 +43,13 @@ const Filter = ({
         }),
       });
       if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
         throw new Error("データの取得に失敗しました");
       }
 
