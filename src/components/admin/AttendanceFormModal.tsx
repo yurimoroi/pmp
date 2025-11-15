@@ -61,7 +61,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose, router, tok
 
       if (child.attendanceAt) {
         const str: AttendanceStatus = child.absenceReason
-          ? child.absenceReason === "都合欠席" || child.absenceReason === "その他"
+          ? child.absenceReason === "都合欠席"
             ? child.stopAttendanceFlg
               ? "事停"
               : "事"
@@ -76,6 +76,10 @@ export function AttendanceFormModal({ nurseryName, classes, onClose, router, tok
             : child.stopAttendanceFlg
             ? "病停"
             : "病"
+          : child.absenceReason === "その他"
+          ? child.stopAttendanceFlg
+            ? "他停"
+            : "他"
           : "〇";
 
         const date = new Date(child.attendanceAt);
@@ -89,7 +93,7 @@ export function AttendanceFormModal({ nurseryName, classes, onClose, router, tok
       attendanceDateCount: attendanceData2.filter((attendance) => attendance === "〇").length,
       diseaseCount: attendanceData2.filter((attendance) => attendance.includes("病")).length,
       circumstanceCount: attendanceData2.filter((attendance) => attendance.includes("事")).length,
-      otherCount: attendanceData2.filter((attendance) => attendance.includes("通")).length,
+      otherCount: attendanceData2.filter((attendance) => attendance.includes("通") || attendance.includes("他")).length,
       stopCount: attendanceData2.filter((attendance) => attendance.includes("停")).length,
     };
     listData.push(listData2);

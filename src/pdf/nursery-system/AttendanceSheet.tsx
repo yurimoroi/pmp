@@ -5,18 +5,7 @@ import { ja } from "date-fns/locale";
 import commonStyles from "@/pdf/styles/common/styles";
 import { styles } from "@/pdf/styles/nursery-system/attendanceSheet";
 
-export type AttendanceStatus =
-  | ""
-  | "未"
-  | "〇"
-  | "事"
-  | "通"
-  | "病"
-  | "災"
-  | "事停"
-  | "通停"
-  | "病停"
-  | "災停";
+export type AttendanceStatus = "" | "未" | "〇" | "事" | "通" | "病" | "災" | "事停" | "通停" | "病停" | "災停" | "他" | "他停";
 
 export interface ListData {
   name: string;
@@ -35,12 +24,7 @@ interface AttendanceSheetProps {
   dataCount: number[];
 }
 
-export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
-  className,
-  yearMonth,
-  listData,
-  dataCount,
-}) => {
+export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ className, yearMonth, listData, dataCount }) => {
   const [year, month] = yearMonth.split("-");
   const daysInMonth = getDaysInMonth(new Date(yearMonth));
 
@@ -73,12 +57,8 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
             <View style={styles.tableNumberCell}></View>
 
             <View style={{ ...styles.tableNameCell, position: "relative" }}>
-              <Text style={{ ...styles.tableHeaderNameCellText, top: "1px", right: "3px" }}>
-                日
-              </Text>
-              <Text style={{ ...styles.tableHeaderNameCellText, top: "44px", right: "3px" }}>
-                {`曜\n日`}
-              </Text>
+              <Text style={{ ...styles.tableHeaderNameCellText, top: "1px", right: "3px" }}>日</Text>
+              <Text style={{ ...styles.tableHeaderNameCellText, top: "44px", right: "3px" }}>{`曜\n日`}</Text>
               <Text
                 style={{
                   ...styles.tableHeaderNameCellText,
@@ -136,36 +116,26 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                     </View>
 
                     <View style={{ ...styles.tableStaticticsSeventhCell, flexDirection: "column" }}>
-                      <View
-                        style={{ ...styles.tableStaticticsEighthCell, ...commonStyles.textCenter }}
-                      >
+                      <View style={{ ...styles.tableStaticticsEighthCell, ...commonStyles.textCenter }}>
                         <Text>欠席日数</Text>
                       </View>
 
                       <View style={styles.tableStaticticsNinthCell}>
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{`病\n気`}</Text>
                         </View>
 
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{`事\n欠`}</Text>
                         </View>
 
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{`そ\nの\n他`}</Text>
                         </View>
                       </View>
                     </View>
 
-                    <View
-                      style={{ ...styles.tableStaticticsEleventhCell, ...commonStyles.textCenter }}
-                    >
+                    <View style={{ ...styles.tableStaticticsEleventhCell, ...commonStyles.textCenter }}>
                       <Text>{`出\n席\n停\n止`}</Text>
                     </View>
                   </View>
@@ -219,10 +189,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
 
                 <View style={styles.tableDateCell}>
                   {data.attendance.map((attendance, index2) => (
-                    <View
-                      key={index2}
-                      style={{ ...styles.tableDateCellItem, ...commonStyles.textCenter }}
-                    >
+                    <View key={index2} style={{ ...styles.tableDateCellItem, ...commonStyles.textCenter }}>
                       <Text
                         style={
                           attendance.includes("停")
@@ -241,9 +208,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                   ))}
                 </View>
 
-                <View
-                  style={{ ...styles.tableStaticticsCell, display: "flex", flexDirection: "row" }}
-                >
+                <View style={{ ...styles.tableStaticticsCell, display: "flex", flexDirection: "row" }}>
                   <View style={{ ...styles.tableStaticticsThirdCell, flexDirection: "row" }}>
                     <View style={styles.tableStaticticsFifthCell}>
                       <View
@@ -256,21 +221,15 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                       </View>
 
                       <View style={{ ...styles.tableStaticticsSeventhCell, flexDirection: "row" }}>
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{data.diseaseCount}</Text>
                         </View>
 
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{data.circumstanceCount}</Text>
                         </View>
 
-                        <View
-                          style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                        >
+                        <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                           <Text>{data.otherCount}</Text>
                         </View>
                       </View>
@@ -310,10 +269,7 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
 
             <View style={styles.tableDateCell}>
               {dataCount.map((attendance, index) => (
-                <View
-                  key={index}
-                  style={{ ...styles.tableDateCellItem, ...commonStyles.textCenter }}
-                >
+                <View key={index} style={{ ...styles.tableDateCellItem, ...commonStyles.textCenter }}>
                   <Text>{attendance}</Text>
                 </View>
               ))}
@@ -332,28 +288,20 @@ export const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                   </View>
 
                   <View style={{ ...styles.tableStaticticsSeventhCell, flexDirection: "row" }}>
-                    <View
-                      style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                    >
+                    <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                       <Text></Text>
                     </View>
 
-                    <View
-                      style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                    >
+                    <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                       <Text></Text>
                     </View>
 
-                    <View
-                      style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}
-                    >
+                    <View style={{ ...styles.tableStaticticsTenthCell, ...commonStyles.textCenter }}>
                       <Text></Text>
                     </View>
                   </View>
 
-                  <View
-                    style={{ ...styles.tableStaticticsEleventhCell, ...commonStyles.textCenter }}
-                  >
+                  <View style={{ ...styles.tableStaticticsEleventhCell, ...commonStyles.textCenter }}>
                     <Text></Text>
                   </View>
                 </View>
