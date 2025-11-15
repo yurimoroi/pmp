@@ -78,10 +78,30 @@ export default function ChildListPage() {
     };
 
     const fetchSettings = async () => {
-      const response = await fetch(`/api/nursery/settings?nursery=${nurseryName}`);
-      const data = await response.json();
-      setIsWaterPlayEnabled(data.data.playingWaterDisplayFlg);
-      setIsMedicationEnabled(data.data.takeMedicineDisplayFlg);
+      const response = await fetch("https://4duvwc9h43.execute-api.ap-northeast-1.amazonaws.com/dev/nursery/settings-get", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({
+          nurseryName,
+        }),
+      });
+
+      const body = await response.json();
+      if (response.status !== 200) {
+        if (response.status === 401) {
+          alert("セッションが切れました。再度ログインしてください。");
+          signOut();
+          router.push("/login");
+          return;
+        }
+
+        throw new Error(body.message);
+      }
+      setIsWaterPlayEnabled(body.playingWaterDisplayFlg);
+      setIsMedicationEnabled(body.takeMedicineDisplayFlg);
     };
 
     fetchData();

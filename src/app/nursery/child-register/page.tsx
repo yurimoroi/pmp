@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { useUser } from "@/context/userContext";
 import { getNurseryClassName } from "@/utility/nursery";
-import { ResponseChildren } from "@/types/api/response";
-// import { ApiResponse, handleApiError } from "@/utility/api/apiHelper";
 import { Button } from "@/components/common/Button";
 import { signOut } from "aws-amplify/auth";
 

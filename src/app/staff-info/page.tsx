@@ -18,7 +18,6 @@ import {
   PostAllowance,
 } from "@/types/staff";
 import { useUser } from "@/context/userContext";
-// import { handleApiError } from "@/utility/api/apiHelper";
 
 const defaultBasicInfo: StaffBasicInfo = {
   workerId: 0,

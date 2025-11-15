@@ -43,11 +43,7 @@ export function ConditionCheck({ onComplete, isMedicationEnabled }: ConditionChe
         <h2 className="text-xl font-bold text-gray-700 mb-4">今朝の様子</h2>
         <div className="grid grid-cols-2 gap-4">
           {conditionOptions.map((cond) => (
-            <SelectButton
-              key={cond}
-              onClick={() => setCondition(cond)}
-              isSelected={condition === cond}
-            >
+            <SelectButton key={cond} onClick={() => setCondition(cond)} isSelected={condition === cond}>
               {cond}
             </SelectButton>
           ))}
@@ -55,7 +51,7 @@ export function ConditionCheck({ onComplete, isMedicationEnabled }: ConditionChe
       </div>
 
       {/* 薬の有無チェックボックス */}
-      {isMedicationEnabled && (
+      {isMedicationEnabled === true && (
         <div className="flex items-center space-x-2 py-4">
           <input
             type="checkbox"

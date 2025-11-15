@@ -60,6 +60,7 @@ const tableHeaders = ["名前", "出欠", "登園時刻", "降園時刻", "お�
 
 const ConditionTable = ({ children, setEditingChildren }: { children: Children[]; setEditingChildren: (child: Children) => void }) => {
   const handleEditClick = (child: Children) => {
+    console.log(child);
     setEditingChildren(child);
   };
 
@@ -105,7 +106,7 @@ const ConditionTable = ({ children, setEditingChildren }: { children: Children[]
               <td className={COMMON_CLASSES.tableCell}>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-gray-700">{child.name}</span>
-                  {child.stopAttendanceFlg && <BanIcon className={`${COMMON_CLASSES.icon.medium} text-red-500`} aria-label="出席停止中" />}
+                  {child.stopAttendanceFlg === true ? <BanIcon className={`${COMMON_CLASSES.icon.medium} text-red-500`} aria-label="出席停止中" /> : ""}
                 </div>
               </td>
               <td className={COMMON_CLASSES.tableCell}>
@@ -131,10 +132,10 @@ const ConditionTable = ({ children, setEditingChildren }: { children: Children[]
               </td>
               <td className={COMMON_CLASSES.tableCell}>{child.conditions ? child.conditions : "-"}</td>
               <td className={COMMON_CLASSES.tableCell}>
-                {child.takeMedicineFlg !== null ? (
+                {child.takeMedicineFlg ? (
                   <div className="flex items-center gap-1">
-                    {child.takeMedicineFlg && <PillIcon className={`${COMMON_CLASSES.icon.medium} text-yellow-500`} />}
-                    <span className={`${COMMON_CLASSES.medicineBadge} ${child.takeMedicineFlg ? COMMON_CLASSES.medicineBadgeVariant.has : COMMON_CLASSES.medicineBadgeVariant.none}`}>
+                    {child.takeMedicineFlg === true && <PillIcon className={`${COMMON_CLASSES.icon.medium} text-yellow-500`} />}
+                    <span className={`${COMMON_CLASSES.medicineBadge} ${child.takeMedicineFlg === true ? COMMON_CLASSES.medicineBadgeVariant.has : COMMON_CLASSES.medicineBadgeVariant.none}`}>
                       {child.takeMedicineFlg === true ? "有" : child.takeMedicineFlg === false ? "無" : ""}
                     </span>
                   </div>
@@ -170,9 +171,11 @@ const ConditionTable = ({ children, setEditingChildren }: { children: Children[]
               </td>
               <td className={COMMON_CLASSES.tableCell}>{child.absenceReason ? child.absenceReason : "-"}</td>
               <td className={COMMON_CLASSES.tableCell}>
-                {child.absenceReason !== null ? (
-                  <span className={`${COMMON_CLASSES.attendanceBadge} ${child.stopAttendanceFlg ? COMMON_CLASSES.attendanceBadgeVariant.stopped : COMMON_CLASSES.attendanceBadgeVariant.normal}`}>
-                    {child.stopAttendanceFlg === true ? "停止中" : child.stopAttendanceFlg === false ? "通常" : ""}
+                {child.absenceReason ? (
+                  <span
+                    className={`${COMMON_CLASSES.attendanceBadge} ${child.stopAttendanceFlg === true ? COMMON_CLASSES.attendanceBadgeVariant.stopped : COMMON_CLASSES.attendanceBadgeVariant.normal}`}
+                  >
+                    {child.stopAttendanceFlg === true ? "停止中" : "通常"}
                   </span>
                 ) : (
                   "-"

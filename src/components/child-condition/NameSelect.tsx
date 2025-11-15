@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/context/userContext";
 import { signOut } from "aws-amplify/auth";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-// import { handleApiError } from "@/utility/api/apiHelper";
 
 interface NameSelectProps {
   className: string;

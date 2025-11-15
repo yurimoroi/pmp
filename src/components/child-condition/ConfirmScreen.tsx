@@ -39,9 +39,7 @@ export function ConfirmScreen({
 }: ConfirmScreenProps) {
   return (
     <div className="bg-white rounded-2xl p-6 border-4 border-gray-100">
-      <h2 className="text-xl font-bold text-gray-700 mb-6">
-        {pickupTime ? "登園情報の確認" : absenceReason ? "欠席情報の確認" : "降園情報の確認"}
-      </h2>
+      <h2 className="text-xl font-bold text-gray-700 mb-6">{pickupTime ? "登園情報の確認" : absenceReason ? "欠席情報の確認" : "降園情報の確認"}</h2>
 
       <div className="space-y-4">
         <div>
@@ -82,7 +80,7 @@ export function ConfirmScreen({
           </div>
         )}
 
-        {isMedicationEnabled && hasMedicine !== null && (
+        {isMedicationEnabled === true && hasMedicine !== null && (
           <div>
             <p className="text-sm text-gray-500">保育園にて服用する薬</p>
             <p className="font-bold text-gray-700">{hasMedicine ? "あり" : "なし"}</p>
@@ -95,7 +93,7 @@ export function ConfirmScreen({
           </div>
         )}
 
-        {isWaterPlayEnabled && canWaterPlay !== null && (
+        {isWaterPlayEnabled === true && canWaterPlay !== null && (
           <div>
             <p className="text-sm text-gray-500">水遊び</p>
             <p className="font-bold text-gray-700">{canWaterPlay ? "〇" : "×"}</p>
@@ -128,18 +126,11 @@ export function ConfirmScreen({
           onClick={onBack}
           variant={absenceReason ? "outline-secondary" : "outline-primary"}
           size="md"
-          className={`flex-1 ${
-            absenceReason ? "hover:border-violet-200" : "hover:border-orange-200"
-          }`}
+          className={`flex-1 ${absenceReason ? "hover:border-violet-200" : "hover:border-orange-200"}`}
         >
           戻る
         </Button>
-        <Button
-          onClick={onConfirm}
-          variant={absenceReason ? "secondary" : "primary"}
-          size="md"
-          className="flex-1"
-        >
+        <Button onClick={onConfirm} variant={absenceReason ? "secondary" : "primary"} size="md" className="flex-1">
           確定
         </Button>
       </div>

@@ -17,11 +17,7 @@ function SelectButton({ onClick, isSelected, children }: SelectButtonProps) {
     <button
       onClick={onClick}
       className={`py-4 px-6 rounded-2xl border-4 transition-all duration-200
-        ${
-          isSelected
-            ? "bg-orange-100 border-orange-400 text-orange-700"
-            : "bg-white border-gray-100 text-gray-700 hover:border-orange-200"
-        }
+        ${isSelected ? "bg-orange-100 border-orange-400 text-orange-700" : "bg-white border-gray-100 text-gray-700 hover:border-orange-200"}
         font-bold text-lg`}
     >
       {children}
@@ -45,33 +41,24 @@ export function PlaySelect({ onComplete, isWaterPlayEnabled }: PlaySelectProps) 
       <div>
         <h2 className="text-xl font-bold text-gray-700 mb-4">外遊びについて</h2>
         <div className="grid grid-cols-2 gap-4">
-          <SelectButton
-            onClick={() => setCanOutdoorPlay(true)}
-            isSelected={canOutdoorPlay === true}
-          >
+          <SelectButton onClick={() => setCanOutdoorPlay(true)} isSelected={canOutdoorPlay === true}>
             〇
           </SelectButton>
-          <SelectButton
-            onClick={() => setCanOutdoorPlay(false)}
-            isSelected={canOutdoorPlay === false}
-          >
+          <SelectButton onClick={() => setCanOutdoorPlay(false)} isSelected={canOutdoorPlay === false}>
             ×
           </SelectButton>
         </div>
       </div>
 
       {/* 水遊び選択 */}
-      {isWaterPlayEnabled && (
+      {isWaterPlayEnabled === true && (
         <div>
           <h2 className="text-xl font-bold text-gray-700 mb-4">水遊びについて</h2>
           <div className="grid grid-cols-2 gap-4">
             <SelectButton onClick={() => setCanWaterPlay(true)} isSelected={canWaterPlay === true}>
               〇
             </SelectButton>
-            <SelectButton
-              onClick={() => setCanWaterPlay(false)}
-              isSelected={canWaterPlay === false}
-            >
+            <SelectButton onClick={() => setCanWaterPlay(false)} isSelected={canWaterPlay === false}>
               ×
             </SelectButton>
           </div>
@@ -79,10 +66,7 @@ export function PlaySelect({ onComplete, isWaterPlayEnabled }: PlaySelectProps) 
       )}
 
       {/* 次へボタン */}
-      <ActionButton
-        onClick={handleSubmit}
-        disabled={canOutdoorPlay === null || (isWaterPlayEnabled && canWaterPlay === null)}
-      >
+      <ActionButton onClick={handleSubmit} disabled={canOutdoorPlay === null || (isWaterPlayEnabled && canWaterPlay === null)}>
         次へ
       </ActionButton>
     </div>
